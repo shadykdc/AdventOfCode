@@ -9,17 +9,6 @@ str2 = lines[1]
 wire1=str1.split(",") 
 wire2=str2.split(",")
 
-def Move(x, y, cmd):
-    if cmd[0] is 'D':
-        y = y - int(cmd[1:])
-    elif cmd[0] is 'R':
-        x = x + int(cmd[1:])
-    elif cmd[0] is 'U':
-        y = y + int(cmd[1:])
-    elif cmd[0] is 'L':
-        x = x - int(cmd[1:])
-    return
-
 # Part 1
 x1_sum = 0
 x2_sum = 0
