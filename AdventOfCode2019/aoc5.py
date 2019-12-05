@@ -126,5 +126,5 @@ if IntCompute():
 else:
     print("error?")
 
-# 16209841 was the answer to Part 1 (out_put)
-# 16209841 is too high for Part 2
+# 16209841 was the answer to Part 1
+# 8834787 is the answer to Part 2
