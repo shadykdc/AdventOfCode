@@ -1,6 +1,6 @@
 from itertools import permutations 
 
-with open('C:\\Users\\kathr\\Code\\AdventOfCode\\AdventOfCode2019\\input7.txt') as f:
+with open('input7.txt') as f:
     lines = f.readlines()
 
 original_program = [int(c) for c in lines[0].strip().split(",")]
