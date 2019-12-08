@@ -1,6 +1,6 @@
 from itertools import permutations 
 
-with open('input7.txt') as f:
+with open('C:\\Users\\kathr\\Code\\AdventOfCode\\AdventOfCode2019\\input7.txt') as f:
     lines = f.readlines()
 
 original_program = [int(c) for c in lines[0].strip().split(",")]
@@ -11,7 +11,9 @@ class Amplifier:
         self.program = prog.copy()
         self.in_put = 0
         self.out_put = 0
-        self.ip = 0
+        self.ip = 2
+        self.halt = False
+        self.error = False
     
     def RunProgram(self):
         while self.ip < len(self.program):
@@ -29,12 +31,12 @@ class Amplifier:
                 modes = [li[-3], li[-4], li[-5]]
             if opcode not in {1, 2, 3, 4, 5, 6, 7, 8, 99}:
                 # Error
-                return 0
-            if self.PerformOpCode(opcode, modes):
-                # HALT
-                return 1
-        # Keep going?
-        return 2
+                print("ERROR op code: ", opcode)
+                self.error = True
+                return
+            self.PerformOpCode(opcode, modes)
+            if opcode == 99 or opcode == 4:
+                return self.out_put
 
     # Returns true if it hit a HALT
     def PerformOpCode(self, opcode, modes):
@@ -65,9 +67,10 @@ class Amplifier:
             self.ip = self.ip + 4
         elif opcode == 99:
             # Halt
-            return True
+            self.halt = True
+            return
         elif opcode == 3:
-            # Input 
+            # Input
             self.program[a] = self.in_put
             self.ip = self.ip + 2
         elif opcode == 4:
@@ -117,29 +120,44 @@ class Amplifier:
             if a == b:
                 self.program[c] = 1
             self.ip = self.ip + 4
-        return False
-
-def Amplify(amp, phase, in_put):
-    amp.program[amp.program[1]] = phase
-    amp.ip = 2
-    amp.in_put = in_put
-    amp.RunProgram()
-
+            
 # Part 1
+"""
 phases = permutations([0, 1, 2, 3, 4])
-amplifiers = [Amplifier(original_program), Amplifier(original_program), Amplifier(original_program), Amplifier(original_program), Amplifier(original_program)]
 max_output = 0
 for phase_tuple in phases:
     in_put = 0
+    amplifiers = [Amplifier(original_program, list(phase_tuple)[0]), \
+        Amplifier(original_program, list(phase_tuple)[1]), \
+        Amplifier(original_program, list(phase_tuple)[2]), \
+        Amplifier(original_program, list(phase_tuple)[3]), \
+        Amplifier(original_program, list(phase_tuple)[4])]
     for idx in range(5):
         phase = list(phase_tuple)[idx]
         amp = amplifiers[idx]
-        Amplify(amp, phase, in_put)
+        amp.in_put.append(phase)
+        print(amp.program)
+        amp.RunProgram()
+        amp.ip = 2
         in_put = amplifiers[idx].out_put
     if amplifiers[4].out_put > max_output:
         max_output = in_put
 print(max_output)
+"""
 
 # Part 2
 phases = permutations([5, 6, 7, 8, 9])
-amplifiers = [Amplifier(original_program), Amplifier(original_program), Amplifier(original_program), Amplifier(original_program), Amplifier(original_program)]
+max_output = 0
+ret = -1
+for phase_tuple in phases:
+    phase_list = list(phase_tuple)
+    amplifiers = [Amplifier(original_program.copy()) for _ in range(5)]
+    for amp, phase in zip(amplifiers, phase_list):
+        amp.program[amp.program[1]] = phase
+    in_put = 0
+    while(not amplifiers[-1].halt):
+        for idx, amp in enumerate(amplifiers):
+            amp.in_put = in_put
+            in_put = amp.RunProgram()
+        max_output = max(amp.out_put, max_output)
+print(max_output)
