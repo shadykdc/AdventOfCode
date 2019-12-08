@@ -24,8 +24,6 @@ def PerformOpCode(opcode, modes):
     c = 0
     if (i < len(nums) - 3):
         c = nums[i+3]
-    if (opcode == 6 and a == 12 and b == 15 and c == 1 and i == 2):
-        return True
     if opcode == 1:
         # Add and Store
         if modes[0] == 0:
