@@ -13,7 +13,6 @@ class Amplifier:
         self.out_put = 0
         self.ip = 2
         self.halt = False
-        self.error = False
     
     def RunProgram(self):
         while self.ip < len(self.program):
@@ -30,9 +29,7 @@ class Amplifier:
                 opcode = abs(self.program[self.ip]%100)
                 modes = [li[-3], li[-4], li[-5]]
             if opcode not in {1, 2, 3, 4, 5, 6, 7, 8, 99}:
-                # Error
                 print("ERROR op code: ", opcode)
-                self.error = True
                 return
             self.PerformOpCode(opcode, modes)
             if opcode == 99 or opcode == 4:
@@ -120,7 +117,7 @@ class Amplifier:
             if a == b:
                 self.program[c] = 1
             self.ip = self.ip + 4
-            
+       
 # Part 1
 """
 phases = permutations([0, 1, 2, 3, 4])
