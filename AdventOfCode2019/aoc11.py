@@ -168,13 +168,14 @@ class Computer:
 
 def Move(pos, dir):
     if dir == 0:
-        pos[0] += 1
+        pos = (pos[0] + 1, pos[1])
     elif dir == 90 or dir == -270:
-        pos[1] +=1
+        pos = (pos[0], pos[1] + 1)
     elif dir == 180 or dir == -180:
-        pos[0] -= 1
+        pos = (pos[0] - 1, pos[1])
     elif dir == 270 or dir == -90:
-        pos[1] -= 1
+        pos = (pos[0], pos[1] - 1)
+    return pos
 
 def PrintMap(m):
     for j in range(len(m)):
@@ -183,26 +184,26 @@ def PrintMap(m):
         print("")
 
 # Part 1
-mp = [['.' for i in range(1000)] for j in range(1000)]
-pos = [500, 500]
+pos = (0, 0)
 intcomp = Computer(original_program)
 count = 0
 dir = 90
-dictionary = {}
+mp = {}
+mp[pos] = '.'
 while not intcomp.halt:
     intcomp.in_put = 0 # '.'
-    if mp[pos[0]][pos[1]] == '#':
+    if pos not in mp:
+        mp[pos] = '.'
+    if mp[pos] == '#':
         intcomp.in_put = 1
     out = intcomp.RunProgram()
     # Paint
-    key = (pos[0], pos[1])
-    dictionary[key] = True
-    if intcomp.halt == True:
+    if len(out) != 2:
         break
     if out[0] == 0:
-        mp[pos[0]][pos[1]] = '.'
+        mp[pos] = '.'
     elif out[0] == 1:
-        mp[pos[0]][pos[1]] = '#'
+        mp[pos] = '#'
     # Move
     if out[1] == 0:
         # Turn Left
@@ -212,7 +213,7 @@ while not intcomp.halt:
         dir = dir - 90
     if dir == -360 or dir == 360:
         dir = 0
-    Move(pos, dir)
+    pos = Move(pos, dir)
 
-print(len(dictionary.keys()))
-# 9982 was wrong
+print(len(mp.keys()))
+# 1565 is wrong
