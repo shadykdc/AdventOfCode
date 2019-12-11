@@ -1,7 +1,7 @@
-# Advent of Code Day 9 - Sensor Boost
+# Advent of Code Day 11
 
 # Parse Input
-with open('input9.txt') as f:
+with open('input11.txt') as f:
     lines = f.readlines()
 
 original_program = [int(string) for string in lines[0].strip().split(',')]
@@ -10,16 +10,17 @@ for i in range(100000):
 
 from itertools import permutations 
 
-class Amplifier:
+class Computer:
     def __init__(self, prog):
         self.program = prog.copy()
         self.in_put = 0
-        self.out_put = 0
+        self.out_put = []
         self.ip = 0 # instruction pointer
         self.halt = False
         self.rb = 0 # relative base
     
     def RunProgram(self):
+        self.out_put = []
         while self.ip < len(self.program):
             modes = [] # modes: 0 = position, 1 = value, 2 = relative base
             opcode = self.program[self.ip]
@@ -37,7 +38,7 @@ class Amplifier:
                 print("ERROR op code: ", opcode)
                 return
             self.PerformOpCode(opcode, modes)
-            if opcode == 99 or opcode == 4:
+            if opcode == 99 or len(self.out_put) == 2:
                 return self.out_put
 
     # Returns true if it hit a HALT
@@ -86,12 +87,14 @@ class Amplifier:
         elif opcode == 4:
             # out_put
             if modes[0] == 1:
-                self.out_put = a
+                self.out_put.append(a)
             elif modes[0] == 2:
-                self.out_put = self.program[a + self.rb]
+                self.out_put.append(self.program[a + self.rb])
             else:
-                self.out_put = self.program[a]
+                self.out_put.append(self.program[a])
             self.ip = self.ip + 2
+            if (len(self.out_put) == 2):
+                return self.out_put
         elif opcode == 5:
             # Jump if true
             if modes[0] == 0:
@@ -163,12 +166,53 @@ class Amplifier:
             self.halt = True
             return
 
-# Part 1
-amp1 = Amplifier(original_program)
-amp1.in_put = 1
-print(amp1.RunProgram())
+def Move(pos, dir):
+    if dir == 0:
+        pos[0] += 1
+    elif dir == 90 or dir == -270:
+        pos[1] +=1
+    elif dir == 180 or dir == -180:
+        pos[0] -= 1
+    elif dir == 270 or dir == -90:
+        pos[1] -= 1
 
-# Part 2
-amp2 = Amplifier(original_program)
-amp2.in_put = 2
-print(amp2.RunProgram())
+def PrintMap(m):
+    for j in range(len(m)):
+        for i in range(len(m[0])):
+            print(m[j][i], end="")
+        print("")
+
+# Part 1
+mp = [['.' for i in range(1000)] for j in range(1000)]
+pos = [500, 500]
+intcomp = Computer(original_program)
+count = 0
+dir = 90
+dictionary = {}
+while not intcomp.halt:
+    intcomp.in_put = 0 # '.'
+    if mp[pos[0]][pos[1]] == '#':
+        intcomp.in_put = 1
+    out = intcomp.RunProgram()
+    # Paint
+    key = (pos[0], pos[1])
+    dictionary[key] = True
+    if intcomp.halt == True:
+        break
+    if out[0] == 0:
+        mp[pos[0]][pos[1]] = '.'
+    elif out[0] == 1:
+        mp[pos[0]][pos[1]] = '#'
+    # Move
+    if out[1] == 0:
+        # Turn Left
+        dir = dir + 90
+    elif out[1] == 1:
+        # Turn Right
+        dir = dir - 90
+    if dir == -360 or dir == 360:
+        dir = 0
+    Move(pos, dir)
+
+print(len(dictionary.keys()))
+# 9982 was wrong
