@@ -91,7 +91,7 @@ while keep_going:
     UpdatePosition(moons)
     time += 1
     keep_going = PositionIsNew(moons, d)
-print(time)
+print(time-1)
 
 # Part 1
 # total_energy = 0
