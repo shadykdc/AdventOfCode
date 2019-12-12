@@ -18,16 +18,17 @@ class Node:
         self.depth = d
         self.children = {} # key=val, value=Node
 
-# moon1 = Moon(-9,10,-1)
-# moon2 = Moon(-14,-8,14)
-# moon3 = Moon(1,5,6)
-# moon4 = Moon(-19,7,8)
+# My Input
+moon1 = Moon(-9,10,-1)
+moon2 = Moon(-14,-8,14)
+moon3 = Moon(1,5,6)
+moon4 = Moon(-19,7,8)
 
 # Example 1
-moon1 = Moon(-1,0,2)
-moon2 = Moon(2,-10,-7)
-moon3 = Moon(4,-8,8)
-moon4 = Moon(3,5,-1)
+# moon1 = Moon(-1,0,2)
+# moon2 = Moon(2,-10,-7)
+# moon3 = Moon(4,-8,8)
+# moon4 = Moon(3,5,-1)
 
 # Example 2
 # moon1 = Moon(-8,-10,0)
@@ -76,7 +77,7 @@ def UpdatePosition(moons):
 def NewNode(vals, depth):
     if depth < len(vals)-1:
         new_node = Node(vals[depth], depth)
-        new_node.children[vals[depth]] = NewNode(vals, depth+1)
+        new_node.children[vals[depth+1]] = NewNode(vals, depth+1)
         return new_node
     return None
 
@@ -106,7 +107,7 @@ while keep_going:
     keep_going = CheckChildren(children, vals, 0)
     UpdateVelocity(moons)
     UpdatePosition(moons)
-print(time)
+print(time-1)
 
 # Part 1
 # total_energy = 0
