@@ -1,5 +1,8 @@
 # Advent of Code Day 11
 
+import math
+import copy
+
 # Parse Input
 with open('input11.txt') as f:
     lines = f.readlines()
@@ -19,16 +22,16 @@ class Node:
         self.children = {} # key=val, value=Node
 
 # My Input
-moon1 = Moon(-9,10,-1)
-moon2 = Moon(-14,-8,14)
-moon3 = Moon(1,5,6)
-moon4 = Moon(-19,7,8)
+# moon1 = Moon(-9,10,-1)
+# moon2 = Moon(-14,-8,14)
+# moon3 = Moon(1,5,6)
+# moon4 = Moon(-19,7,8)
 
 # Example 1
-# moon1 = Moon(-1,0,2)
-# moon2 = Moon(2,-10,-7)
-# moon3 = Moon(4,-8,8)
-# moon4 = Moon(3,5,-1)
+moon1 = Moon(-1,0,2)
+moon2 = Moon(2,-10,-7)
+moon3 = Moon(4,-8,8)
+moon4 = Moon(3,5,-1)
 
 # Example 2
 # moon1 = Moon(-8,-10,0)
@@ -36,78 +39,62 @@ moon4 = Moon(-19,7,8)
 # moon3 = Moon(2,-7,3)
 # moon4 = Moon(9,-8,-3)
 
-moons = [moon1, moon2, moon3, moon4]
+old_moons = [moon1, moon2, moon3, moon4]
 
-def Move(moon1, moon2):
-    if moon1.pos[0] < moon2.pos[0]:
-        moon2.vel[0] -= 1
-        moon1.vel[0] += 1
-    elif moon1.pos[0] > moon2.pos[0]:
-        moon2.vel[0] += 1
-        moon1.vel[0] -= 1
-    if moon1.pos[1] < moon2.pos[1]:
-        moon2.vel[1] -= 1
-        moon1.vel[1] += 1
-    elif moon1.pos[1] > moon2.pos[1]:
-        moon2.vel[1] += 1
-        moon1.vel[1] -= 1
-    if moon1.pos[2] < moon2.pos[2]:
-        moon2.vel[2] -= 1
-        moon1.vel[2] += 1
-    elif moon1.pos[2] > moon2.pos[2]:
-        moon2.vel[2] += 1
-        moon1.vel[2] -= 1
+def Move(moon1, moon2, i):
+    if moon1.pos[i] < moon2.pos[i]:
+        moon2.vel[i] -= 1
+        moon1.vel[i] += 1
+    elif moon1.pos[i] > moon2.pos[i]:
+        moon2.vel[i] += 1
+        moon1.vel[i] -= 1
 
-# Update Velocity (Gravity)
-def UpdateVelocity(moons):
-    for i in range(4):
+def UpdateVelocity(moons, i):
+    for i in range(len(moons)):
         j = i + 1
-        while j < 4:
+        while j < len(moons):
             moon1 = moons[i]
             moon2 = moons[j]
-            Move(moon1, moon2)
+            Move(moon1, moon2, i)
             j+=1
 
-def UpdatePosition(moons):
+def UpdatePosition(moons, i):
     for moon in moons:
-        moon.pos[0] += moon.vel[0]
-        moon.pos[1] += moon.vel[1]
-        moon.pos[2] += moon.vel[2]
+        moon.pos[i] += moon.vel[i]
 
-def NewNode(vals, depth):
-    if depth < len(vals)-1:
-        new_node = Node(vals[depth], depth)
-        new_node.children[vals[depth+1]] = NewNode(vals, depth+1)
-        return new_node
-    return None
-
-def CheckChildren(kids, vals, depth):
-    val = vals[depth]
-    if val in kids:
-        if depth == 21:
-            return False
-        return CheckChildren(kids[val].children, vals, depth+1)
-    kids[val] = NewNode(vals, depth)
-    return True
+def PositionIsOld(moons, d, i):
+    position = ""
+    for moon in moons:
+        position += str(moon.pos[i]) + ","
+        position += str(moon.vel[i]) + ","
+    if position in d:
+        return True
+    d[position] = True
+    return False
 
 # Part 2
-time = 0
-children = {}
-keep_going = True
-while keep_going:
-    time += 1
-    vals = [moons[0].pos[0], moons[0].pos[1], moons[0].pos[2], \
-            moons[0].vel[0], moons[0].vel[1], moons[0].vel[2], \
-            moons[1].pos[0], moons[1].pos[1], moons[1].pos[2], \
-            moons[1].vel[0], moons[1].vel[1], moons[1].vel[2], \
-            moons[2].pos[0], moons[2].pos[1], moons[2].pos[2], \
-            moons[2].vel[0], moons[2].vel[1], moons[2].vel[2], \
-            moons[3].pos[0], moons[3].pos[1], moons[3].pos[2], \
-            moons[3].vel[0], moons[3].vel[1], moons[3].vel[2]]
-    keep_going = CheckChildren(children, vals, 0)
-    UpdateVelocity(moons)
-    UpdatePosition(moons)
-print(time-1)
+times = [0, 0, 0]
+for i in range(3): # each axis
+    d = {}
+    moons = copy.deepcopy(old_moons)
+    while True:
+        times[i] += 1
+        if(times[i] == 2):
+            position = ""
+            for moon in moons:
+                position += str(moon.pos[i]) + ","
+                position += str(moon.vel[i]) + ","
+            print(position)
+        UpdateVelocity(moons, i)
+        UpdatePosition(moons, i)
+        if PositionIsOld(moons, d, i):
+            break
+err = 1
+times = [times[0]-err, times[1]-err, times[2]-err]
+out = times[0]*times[1]/math.gcd(times[0], times[1])
+out = int(out)*times[2]/math.gcd(int(out), times[2])
+print(times)
+print(out)
 
 # Part 1
 # total_energy = 0
