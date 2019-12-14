@@ -8,6 +8,12 @@ original_program = [int(string) for string in lines[0].strip().split(',')]
 for i in range(100000):
     original_program.append(0)
 
+def PrintMap(m):
+    for j in range(len(m)):
+        for i in range(len(m[0])):
+            print(m[j][i], end="")
+        print("")
+
 class Computer:
     def __init__(self, prog):
         self.program = prog.copy()
@@ -17,9 +23,11 @@ class Computer:
         self.halt = False
         self.rb = 0 # relative base
         self.score = 0
+        self.mp = [[" " for i in range(100)] for _ in range(100)]
+        self.px = 0
+        self.bx = 0
     
     def RunProgram(self):
-        self.out_put = []
         while self.ip < len(self.program):
             modes = [] # modes: 0 = position, 1 = value, 2 = relative base
             opcode = self.program[self.ip]
@@ -37,7 +45,12 @@ class Computer:
                 print("ERROR op code: ", opcode)
                 return
             self.PerformOpCode(opcode, modes)
-            if opcode == 99 or len(self.out_put) == 3:
+            if len(self.out_put) == 3:
+                print(self.out_put)
+                self.bx = self.out_put[0]
+                self.score += self.out_put[2]
+                return self.out_put
+            if opcode == 99:
                 return self.out_put
 
     # Returns true if it hit a HALT
@@ -81,6 +94,11 @@ class Computer:
             # Input
             if modes[0] == 2:
                 a = a + self.rb
+            self.in_put = 0
+            if self.bx < self.px:
+                self.in_put = -1
+            elif self.bx > self.px:
+                self.in_put = 1
             self.program[a] = self.in_put
             self.ip = self.ip + 2
         elif opcode == 4:
@@ -164,55 +182,49 @@ class Computer:
             # Halt
             self.halt = True
             return
-    def GetScore(self, out):
-        self.in_put = 0
-        if out[0] < 0:
-            self.in_put = -1
-        elif out[0] > 0:
-            self.in_put = 1
-        return self.score + out[2]
+    
+    def AdjustMap(self):
+        x = comp.out_put[0]
+        y = comp.out_put[1]
+        tile_id = comp.out_put[2]
+        if self.mp[y][x] in {"W","P"}:
+            return
+        elif tile_id == 0 and (x,y) not in self.mp: # empty
+            self.mp[y][x] = " "
+        elif tile_id == 1: # wall
+            self.mp[y][x] = "W"
+        elif tile_id == 2: # block
+            self.mp[y][x] = "B"
+        elif tile_id == 3: #horizontal paddle
+            self.mp[y][x] = "P"
+            self.px = x
+        elif tile_id == 4: # ball
+            self.mp[y][x] = "."
+            self.bx = x
 
-def AdjustMap(mp, out):
-    x = out[0]
-    y = out[1]
-    tile_id = out[2]
-    if (x,y) in mp and mp[(x,y)] in {1,3}:
-        return
-    if (x,y) in mp and mp[(x,y)] == 2 and tile_id == 4:
-        mp[(x,y)] = tile_id
-    elif tile_id == 0 and (x,y) not in mp: # empty
-        mp[(x,y)] = tile_id
-    elif tile_id == 1: # wall
-            mp[(x,y)] = tile_id
-    elif tile_id == 2: # block
-        mp[(x,y)] = 2
-    elif tile_id == 3: #horizontal paddle
-        mp[(x,y)] = 3
-    elif tile_id == 4: # ball
-        mp[(x,y)] = 4
 
 comp = Computer(original_program)
 
-mp = {}
+# Part 1
 while comp.halt == False:
     out = comp.out_put
-    if len(out) == 3:
-        AdjustMap(mp, out)
+    if len(comp.out_put) == 3:
+        comp.AdjustMap()
         comp.out = []
     comp.RunProgram()
 
 count = 0
-for key in mp.keys():
-    if mp[key] == 2:
-        count += 1
-print(count)
+for i in range(100):
+    for j in range(100):
+        if comp.mp[i][j] == 2:
+            count += 1
 
+# Part 2
 comp2 = Computer(original_program)
 comp2.program[0] = 2
+comp2.mp = comp.mp
 while comp2.halt == False:
-    out = comp2.out_put
-    if len(out) == 3:
-        comp2.GetScore(out)
-        comp2.out = []
+    comp2.out_put = []
     comp2.RunProgram()
+PrintMap(comp2.mp)
 print(comp2.score)

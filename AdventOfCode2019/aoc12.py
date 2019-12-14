@@ -22,16 +22,22 @@ class Node:
         self.children = {} # key=val, value=Node
 
 # My Input
-# moon1 = Moon(-9,10,-1)
-# moon2 = Moon(-14,-8,14)
-# moon3 = Moon(1,5,6)
-# moon4 = Moon(-19,7,8)
+moon1 = Moon(-9,10,-1)
+moon2 = Moon(-14,-8,14)
+moon3 = Moon(1,5,6)
+moon4 = Moon(-19,7,8)
+xs = "-9,0,-14,0,1,0,-19,0,"
+ys = "10,0,-8,0,5,0,7,0,"
+zs = "-1,0,14,0,6,0,8,0,"
 
 # Example 1
-moon1 = Moon(-1,0,2)
-moon2 = Moon(2,-10,-7)
-moon3 = Moon(4,-8,8)
-moon4 = Moon(3,5,-1)
+# moon1 = Moon(-1,0,2)
+# moon2 = Moon(2,-10,-7)
+# moon3 = Moon(4,-8,8)
+# moon4 = Moon(3,5,-1)
+# xs = "-1,0,2,0,4,0,3,0,"
+# ys = "0,0,-10,0,-8,0,5,0,"
+# zs = "2,0,-7,0,8,0,-1,0,"
 
 # Example 2
 # moon1 = Moon(-8,-10,0)
@@ -39,6 +45,7 @@ moon4 = Moon(3,5,-1)
 # moon3 = Moon(2,-7,3)
 # moon4 = Moon(9,-8,-3)
 
+a = [xs, ys, zs]
 old_moons = [moon1, moon2, moon3, moon4]
 
 def Move(moon1, moon2, i):
@@ -50,10 +57,10 @@ def Move(moon1, moon2, i):
         moon1.vel[i] -= 1
 
 def UpdateVelocity(moons, i):
-    for i in range(len(moons)):
-        j = i + 1
+    for k in range(len(moons)):
+        j = k + 1
         while j < len(moons):
-            moon1 = moons[i]
+            moon1 = moons[k]
             moon2 = moons[j]
             Move(moon1, moon2, i)
             j+=1
@@ -62,39 +69,35 @@ def UpdatePosition(moons, i):
     for moon in moons:
         moon.pos[i] += moon.vel[i]
 
-def PositionIsOld(moons, d, i):
+def BackAtTheStart(moons, i):
     position = ""
     for moon in moons:
         position += str(moon.pos[i]) + ","
         position += str(moon.vel[i]) + ","
-    if position in d:
+    if position == a[i]:
         return True
-    d[position] = True
     return False
 
 # Part 2
 times = [0, 0, 0]
 for i in range(3): # each axis
-    d = {}
     moons = copy.deepcopy(old_moons)
     while True:
         times[i] += 1
-        if(times[i] == 2):
-            position = ""
-            for moon in moons:
-                position += str(moon.pos[i]) + ","
-                position += str(moon.vel[i]) + ","
-            print(position)
+        position = ""
+        for moon in moons:
+            position += str(moon.pos[i]) + ","
+            position += str(moon.vel[i]) + ","
         UpdateVelocity(moons, i)
         UpdatePosition(moons, i)
-        if PositionIsOld(moons, d, i):
+        if BackAtTheStart(moons, i):
+            print(times[i])
             break
-err = 1
-times = [times[0]-err, times[1]-err, times[2]-err]
+
+times = [times[0], times[1], times[2]]
 out = times[0]*times[1]/math.gcd(times[0], times[1])
 out = int(out)*times[2]/math.gcd(int(out), times[2])
-print(times)
-print(out)
+print(int(out))
 
 # Part 1
 # total_energy = 0
