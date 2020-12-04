@@ -1,4 +1,4 @@
- /*
+/*
     Advent of Code Day 5
 
     To run on a mac:
