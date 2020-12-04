@@ -45,6 +45,7 @@ bool is_num_in_range(string str, int low, int high)
     return false;
 }
 
+// check each required passport field for validity
 bool data_is_valid(string req_field, string value)
 {
     if (strcmp(req_field.c_str(), "byr") == 0)
@@ -122,7 +123,6 @@ bool is_valid_passport(unordered_map<string, string>& passport)
 int count_valid_passports(
     const vector<unordered_map<string, string>>& passports)
 {
-    // count valid passports
     int count = 0;
     for (auto passport : passports)
     {
@@ -148,11 +148,14 @@ void read_file(vector<unordered_map<string, string>>& passports)
         }
     }
     ifs.close();
-    passports.pop_back();
+    if (passports.back().size() == 0)
+        passports.pop_back();
 }
 
 int main(int argc, char *argv[])
 {
+    // a list of passports where a passport is a map
+    // of fields with a value (string) for each field
     vector<unordered_map<string,string>> passports;
 
     read_file(passports);
