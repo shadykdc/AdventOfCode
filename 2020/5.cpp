@@ -93,14 +93,13 @@ int main(int argc, char *argv[])
     int max_id = -1;
     int min_id = INT_MAX;
     int sum_of_ids = 0;
-    vector<int> seat_ids;
+
     for (auto input : inputs)
     {
         int seat_id = get_seat_id(input);
         max_id = max(max_id, seat_id);
         min_id = min(min_id, seat_id);
         sum_of_ids += seat_id;
-        seat_ids.push_back(seat_id);
     }
     cout << "Part 1: " << max_id << endl; // 963
 
