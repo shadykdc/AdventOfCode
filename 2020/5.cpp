@@ -50,7 +50,7 @@ int get_seat_id(string input)
         }
     }
 
-    for(int i = ROW_CHAR_COUNT; i < ROW_CHAR_COUNT + COL_CHAR_COUNT; i++)
+    for (int i = ROW_CHAR_COUNT; i < ROW_CHAR_COUNT + COL_CHAR_COUNT; i++)
     {
         if (input[i] == 'L') // lower half
         {
@@ -67,6 +67,7 @@ int get_seat_id(string input)
         }
     }
 
+    // magic seat id calculation from problem description
     return row_high * 8 + col_high;
 }
 
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
 
     read_input_file(inputs);
 
-    int max_id = -1;
+    int max_id = INT_MIN;
     int min_id = INT_MAX;
     int sum_of_ids = 0;
 
