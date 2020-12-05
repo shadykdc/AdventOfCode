@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
     // Part 2: This is the theoretical sum from min_id to max_id so the classic
     // "add the numbers from 1 to 100" type problem followed by the "find the
     // missing number in a list of contiguous numbers" problem where you
-    // take the sum of 1 to 100 and subtract the sum of the numbers in your
-    // list and you end up with the missing number.
+    // take the sum of, say, 1 to 100 and subtract the sum of the numbers in
+    // your list and you end up with the missing number.
     int theoretical_sum = (max_id * (max_id+1) /2) - ((min_id - 1) * min_id/2);
     cout << "Part 2: " << theoretical_sum - sum_of_ids << endl; // 592
 
