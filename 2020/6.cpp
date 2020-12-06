@@ -24,10 +24,15 @@ using namespace std;
 
 struct Group
 {
+    // e.g. question_to_yes_count[a] = 3
+    // means 3 people in this group said "yes" to question "a"
     unordered_map<char, int> question_to_yes_count;
+    // size = number of people in the group
     int size = 0;
 };
 
+// For each group, count the number of questions to which anyone answered "yes".
+// Return the sum of those counts.
 int part1(vector<Group>& groups)
 {
     int sum = 0;
@@ -38,6 +43,8 @@ int part1(vector<Group>& groups)
     return sum;
 }
 
+// For each group, count the number of questions to which everyone answered
+// "yes". Return the sum of those counts.
 int part2(vector<Group>& groups)
 {
     int sum = 0;
@@ -60,19 +67,25 @@ void read_file(
     string str;
     Group new_group;
     groups.push_back(new_group);
+
+    // for each line / string (person in group)
     while(ifs >> str)
     {
         Group* group = &groups.back();
+        // increment the size (number of people) in the group
+        group->size++;
+        // for each "question" answered "yes" to (character) by the person
         for (auto c : str)
         {
+            // increment the count in the Group's map
             auto got = group->question_to_yes_count.find(c);
             if (got != group->question_to_yes_count.end())
                 group->question_to_yes_count[c] += 1;
             else
                 group->question_to_yes_count[c] = 1;
         }
-        group->size++;
 
+        // if there are two new lines, we are starting a new group
         if (ifs.peek() == '\n')
         {
             ifs.get();
@@ -81,6 +94,7 @@ void read_file(
         }
     }
     ifs.close();
+    // make sure we didn't leave an empty group on the end
     if (groups.back().size == 0)
         groups.pop_back();
 }
