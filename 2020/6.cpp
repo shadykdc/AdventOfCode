@@ -27,6 +27,7 @@ struct Group
     // e.g. question_to_yes_count[a] = 3
     // means 3 people in this group said "yes" to question "a"
     unordered_map<char, int> question_to_yes_count;
+
     // size = number of people in the group
     int size = 0;
 };
@@ -50,9 +51,10 @@ int part2(vector<Group>& groups)
     int sum = 0;
     for (auto group : groups)
     {
+        // for each question that someone in the group answered yes to
         for (auto got : group.question_to_yes_count)
         {
-            // everyone in group said yes to this (got.first) question
+            // if everyone in group said yes to this (got.first) question
             if (group.size == got.second)
                 sum++;
         }
@@ -94,6 +96,7 @@ void read_file(
         }
     }
     ifs.close();
+
     // make sure we didn't leave an empty group on the end
     if (groups.back().size == 0)
         groups.pop_back();
