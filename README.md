@@ -5,7 +5,7 @@
 
 ## 2020
 
-4/25 days completed in C++.
+7/25 days completed in C++.
 
 To run (on a mac at least):
 
