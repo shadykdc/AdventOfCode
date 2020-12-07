@@ -69,7 +69,6 @@ void read_file(
     ifstream ifs(INPUT_FILE, ifstream::in);
     string str;
 
-    // read in the map of trees to grid
     while(ifs.good())
     {
         getline(ifs, str);
