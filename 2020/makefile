@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -std=c++11 -pedantic -Wall
-DAY = 6
+DAY = 7
 OBJECTS = $(DAY).o
 APP_NAME = aoc
 

@@ -106,7 +106,6 @@ int main(int argc, char *argv[])
 {
     vector<Group> groups;
 
-    // read file into nums
     read_file(groups);
 
     cout << "Part 1: " << part1(groups) << endl; // 6775
