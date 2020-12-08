@@ -45,10 +45,8 @@ bool run_game(vector<pair<string, int>>& instructions, int* acc)
     int i = 0;
     vector<bool> run_before(instructions.size(), false);
 
-    while (true)
+    while (!run_before[i])
     {
-        if (run_before[i]) return false; // Part 1
-
         char* op = &instructions[i].first[0];
         int arg = instructions[i].second;
         run_before[i] = true;
@@ -76,7 +74,7 @@ bool run_game(vector<pair<string, int>>& instructions, int* acc)
         }
     }
 
-    return acc;
+    return false;
 }
 
 int part2(vector<pair<string, int>>& instructions)
