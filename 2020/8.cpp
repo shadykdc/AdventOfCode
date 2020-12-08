@@ -15,20 +15,103 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 using namespace std;
 
 #define INPUT_FILE "input8.txt"
 
-void read_file()
+void read_file(vector<pair<string, int>>& instructions)
 {
-    return;
+    FILE* fp;
+    fp = fopen(INPUT_FILE, "r");
+    if (fp == NULL)
+    {
+        cout << "Invalid file" << endl;
+        exit(1);
+    }
+
+    string op;
+    int arg;
+    while(fscanf(fp, "%s %d", &op[0], &arg) == 2)
+    {
+        instructions.push_back(make_pair(op, arg));
+    }
+    fp.close();
+}
+
+bool run_game(vector<pair<string, int>>& instructions, int* acc)
+{
+    int i = 0;
+    vector<bool> run_before(instructions.size(), false);
+
+    while (true)
+    {
+        if (run_before[i]) return false; // Part 1
+
+        string op = instructions[i].first;
+        int arg = instructions[i].second;
+        run_before[i] = true;
+
+        if (strcmp(op.c_str(), "nop") == 0)
+        {
+            i = (i + 1)%instructions.size();
+            if (i == instructions.size()-1) // Part 2
+                return true;
+        }
+        else if (strcmp(op.c_str(), "acc") == 0)
+        {
+            *acc += arg;
+            i = (i + 1)%instructions.size();
+            if (i == instructions.size()-1) // Part 2
+                return true;
+        }
+        else if (strcmp(op.c_str(), "jmp") == 0)
+        {
+            i = (i + arg)%instructions.size();
+        }
+        else
+        {
+            cout << "Invalid operation: " << op << endl;
+        }
+    }
+
+    return acc;
+}
+
+int part2(vector<pair<string, int>>& instructions)
+{
+    for (int i = 0; i < instructions.size(); i++)
+    {
+        if (strcmp(instructions[i].first.c_str(), "jmp") == 0)
+        {
+            instructions[i].first = "nop";
+            int acc = 0;
+            if (run_game(instructions, &acc)) return acc;
+            instructions[i].first = "jmp";
+        }
+        else if (strcmp(instructions[i].first.c_str(), "nop") == 0)
+        {
+            instructions[i].first = "jmp";
+            int acc = 0;
+            if (run_game(instructions, &acc)) return acc;
+            instructions[i].first = "nop";
+        }
+    }
+
+    return -1;
 }
 
 int main(int argc, char *argv[])
 {
+    vector<pair<string, int>> instructions;
+    int accumulator = 0;
 
-    read_file();
+    read_file(instructions);
+
+    assert(!run_game(instructions, &accumulator));
+    cout << "Part 1: " << accumulator << endl; // 1859
+    cout << "Part 2: " << part2(instructions) << endl; // 1235
 
     return 0;
 }

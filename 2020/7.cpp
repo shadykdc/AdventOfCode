@@ -71,21 +71,24 @@ void read_file(
 
     while(ifs.good())
     {
-        getline(ifs, str);
-        // example: drab lavender bags contain 4 pale turquoise bags,
+        // sample line: drab lavender bags contain 4 pale turquoise bags,
         // 5 faded lime bags, 2 bright aqua bags.
-        if (str.find(BAGS_CONTAIN) == string::npos) break;
+        getline(ifs, str);
 
         // <outer_color> bags contain [<num> <inner_color> bags,] x N
-        string outer_color = str.substr(0, str.find(BAGS_CONTAIN));
-        size_t contains_start = str.find(BAGS_CONTAIN) + strlen(BAGS_CONTAIN);
-        size_t contains_length = str.find(".") - contains_start;
-
+        size_t bags_contain_pos = str.find(BAGS_CONTAIN);
+        if (bags_contain_pos == string::npos) break;
+        string outer_color = str.substr(0, bags_contain_pos);
+        size_t contains_start = bags_contain_pos + strlen(BAGS_CONTAIN);
+        size_t contains_length = str.size() - 1 - contains_start;
         vector<BagsOfAColor> bags = {};
         string contains_str = str.substr(contains_start, contains_length);
+
         if (contains_str.find("no other bags") == string::npos)
             inner_bags_str_to_vec(bags, contains_str);
+
         color_to_inner_bags[outer_color] = bags;
+
         for (auto bag : bags)
         {
             if (color_to_parent_colors.find(bag.color) == color_to_parent_colors.end())
@@ -108,9 +111,8 @@ int part1(
     while (colors_to_check.size() > 0)
     {
         string color = *colors_to_check.begin();
-        unordered_set<string> parents = color_to_parent_colors[color];
         checked_colors.insert(color);
-        for (auto parent_color : parents)
+        for (auto parent_color : color_to_parent_colors[color])
         {
             if (checked_colors.find(parent_color) == checked_colors.end())
                 colors_to_check.insert(parent_color);
