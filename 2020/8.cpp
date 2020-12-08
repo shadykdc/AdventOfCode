@@ -21,7 +21,13 @@ using namespace std;
 
 #define INPUT_FILE "input8.txt"
 
-void read_file(vector<pair<string, int>>& instructions)
+struct Instruction
+{
+    int arg = 0;
+    string op = "";
+};
+
+void read_file(vector<Instruction>& instructions)
 {
     FILE* fp;
     fp = fopen(INPUT_FILE, "r");
@@ -31,69 +37,66 @@ void read_file(vector<pair<string, int>>& instructions)
         exit(1);
     }
 
-    string op;
-    int arg;
-    while(fscanf(fp, "%s %d", &op[0], &arg) == 2)
+    Instruction instr;
+    while(fscanf(fp, "%s %d", &instr.op[0], &instr.arg) == 2)
     {
-        instructions.push_back(make_pair(op, arg));
+        instructions.push_back(instr);
     }
     fclose(fp);
 }
 
-bool run_game(vector<pair<string, int>>& instructions, int* acc)
+bool run_game(vector<Instruction>& instructions, int* acc)
 {
     int i = 0;
     vector<bool> run_before(instructions.size(), false);
 
     while (!run_before[i])
     {
-        char* op = &instructions[i].first[0];
-        int arg = instructions[i].second;
         run_before[i] = true;
 
-        if (strcmp(op, "nop") == 0)
+        if (strcmp(instructions[i].op.c_str(), "nop") == 0)
         {
             i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
-        else if (strcmp(op, "acc") == 0)
+        else if (strcmp(instructions[i].op.c_str(), "acc") == 0)
         {
-            *acc += arg;
+            *acc += instructions[i].arg;
             i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
-        else if (strcmp(op, "jmp") == 0)
+        else if (strcmp(instructions[i].op.c_str(), "jmp") == 0)
         {
-            i = (i + arg) % instructions.size();
+            i = (i + instructions[i].arg) % instructions.size();
         }
         else
         {
-            cout << "Invalid operation: " << op << endl;
+            cout << "Invalid operation: " << instructions[i].op.c_str() << endl;
         }
     }
 
     return false;
 }
 
-int part2(vector<pair<string, int>>& instructions)
+int part2(vector<Instruction>& instructions)
 {
     for (int i = 0; i < instructions.size(); i++)
     {
-        if (strcmp(instructions[i].first.c_str(), "jmp") == 0)
+        if (strcmp(instructions[i].op.c_str(), "jmp") == 0)
         {
-            instructions[i].first = "nop";
+            instructions[i].op = "nop";
             int acc = 0;
             if (run_game(instructions, &acc)) return acc;
-            instructions[i].first = "jmp";
+            instructions[i].op = "jmp";
         }
-        else if (strcmp(instructions[i].first.c_str(), "nop") == 0)
+        else if (strcmp(instructions[i].op.c_str(), "nop") == 0)
         {
-            instructions[i].first = "jmp";
+            instructions[i].op = "jmp";
             int acc = 0;
             if (run_game(instructions, &acc)) return acc;
-            instructions[i].first = "nop";
+            instructions[i].op = "nop";
         }
     }
 
@@ -102,7 +105,7 @@ int part2(vector<pair<string, int>>& instructions)
 
 int main(int argc, char *argv[])
 {
-    vector<pair<string, int>> instructions;
+    vector<Instruction> instructions;
     int accumulator = 0;
 
     read_file(instructions);
