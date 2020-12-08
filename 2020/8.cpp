@@ -53,20 +53,20 @@ bool run_game(vector<pair<string, int>>& instructions, int* acc)
 
         if (strcmp(op, "nop") == 0)
         {
-            i = (i + 1)%instructions.size();
+            i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
         else if (strcmp(op, "acc") == 0)
         {
             *acc += arg;
-            i = (i + 1)%instructions.size();
+            i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
         else if (strcmp(op, "jmp") == 0)
         {
-            i = (i + arg)%instructions.size();
+            i = (i + arg) % instructions.size();
         }
         else
         {
