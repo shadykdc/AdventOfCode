@@ -37,7 +37,7 @@ void read_file(vector<pair<string, int>>& instructions)
     {
         instructions.push_back(make_pair(op, arg));
     }
-    fp.close();
+    fclose(fp);
 }
 
 bool run_game(vector<pair<string, int>>& instructions, int* acc)
@@ -49,24 +49,24 @@ bool run_game(vector<pair<string, int>>& instructions, int* acc)
     {
         if (run_before[i]) return false; // Part 1
 
-        string op = instructions[i].first;
+        char* op = &instructions[i].first[0];
         int arg = instructions[i].second;
         run_before[i] = true;
 
-        if (strcmp(op.c_str(), "nop") == 0)
+        if (strcmp(op, "nop") == 0)
         {
             i = (i + 1)%instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
-        else if (strcmp(op.c_str(), "acc") == 0)
+        else if (strcmp(op, "acc") == 0)
         {
             *acc += arg;
             i = (i + 1)%instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
         }
-        else if (strcmp(op.c_str(), "jmp") == 0)
+        else if (strcmp(op, "jmp") == 0)
         {
             i = (i + arg)%instructions.size();
         }
