@@ -24,7 +24,7 @@ using namespace std;
 struct Instruction
 {
     int arg = 0;
-    string op = "";
+    enum { ACC, JMP, NOP } op;
 };
 
 void read_file(vector<Instruction>& instructions)
@@ -38,14 +38,21 @@ void read_file(vector<Instruction>& instructions)
     }
 
     Instruction instr;
-    while(fscanf(fp, "%s %d", &instr.op[0], &instr.arg) == 2)
+    string op;
+    while(fscanf(fp, "%s %d", &op[0], &instr.arg) == 2)
     {
+        if (strcmp(&op[0], "acc") == 0)
+            instr.op = Instruction::ACC;
+        else if (strcmp(&op[0], "jmp") == 0)
+            instr.op = Instruction::JMP;
+        else if (strcmp(&op[0], "nop") == 0)
+            instr.op = Instruction::NOP;
         instructions.push_back(instr);
     }
     fclose(fp);
 }
 
-bool run_game(vector<Instruction>& instructions, int* acc)
+bool run_game(vector<Instruction>& instructions, int* accumulator)
 {
     int i = 0;
     vector<bool> run_before(instructions.size(), false);
@@ -54,26 +61,24 @@ bool run_game(vector<Instruction>& instructions, int* acc)
     {
         run_before[i] = true;
 
-        if (strcmp(instructions[i].op.c_str(), "nop") == 0)
+        switch (instructions[i].op)
         {
+        case Instruction::NOP:
             i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
-        }
-        else if (strcmp(instructions[i].op.c_str(), "acc") == 0)
-        {
-            *acc += instructions[i].arg;
+            break;
+        case Instruction::ACC:
+            *accumulator += instructions[i].arg;
             i = (i + 1) % instructions.size();
             if (i == instructions.size()-1) // Part 2
                 return true;
-        }
-        else if (strcmp(instructions[i].op.c_str(), "jmp") == 0)
-        {
+            break;
+        case Instruction::JMP:
             i = (i + instructions[i].arg) % instructions.size();
-        }
-        else
-        {
-            cout << "Invalid operation: " << instructions[i].op.c_str() << endl;
+            break;
+        default:
+            cout << "Invalid operation: " << instructions[i].op << endl;
         }
     }
 
@@ -84,19 +89,24 @@ int part2(vector<Instruction>& instructions)
 {
     for (int i = 0; i < instructions.size(); i++)
     {
-        if (strcmp(instructions[i].op.c_str(), "jmp") == 0)
+        int accumulator = 0;
+        switch (instructions[i].op)
         {
-            instructions[i].op = "nop";
-            int acc = 0;
-            if (run_game(instructions, &acc)) return acc;
-            instructions[i].op = "jmp";
-        }
-        else if (strcmp(instructions[i].op.c_str(), "nop") == 0)
-        {
-            instructions[i].op = "jmp";
-            int acc = 0;
-            if (run_game(instructions, &acc)) return acc;
-            instructions[i].op = "nop";
+        case Instruction::JMP:
+            instructions[i].op = Instruction::NOP;
+            if (run_game(instructions, &accumulator))
+                return accumulator;
+            instructions[i].op = Instruction::JMP;
+            break;
+        case Instruction::NOP:
+            instructions[i].op = Instruction::JMP;
+            if (run_game(instructions, &accumulator))
+                return accumulator;
+            instructions[i].op = Instruction::NOP;
+            break;
+        case Instruction::ACC:
+        default:
+            continue;
         }
     }
 
