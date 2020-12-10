@@ -19,6 +19,7 @@
 using namespace std;
 
 #define INPUT_FILE "input10.txt"
+#define MAX_JUMP 3
 
 void read_file(vector<int>& nums)
 {
@@ -30,7 +31,7 @@ void read_file(vector<int>& nums)
     {
         nums.push_back(num);
         // thought about removing duplicates but I guess the inputs didn't
-        // have any so... my code doesn't account for duplicates anywhere :)
+        // have any so... my code doesn't account for duplicates :)
     }
     infile.close();
 }
@@ -52,26 +53,26 @@ int part1(vector<int>& nums)
 
 long count_combinations(vector<int>& nums, size_t idx, vector<long>& memo)
 {
-    if (idx == nums.size()-1) return 1;
-    if (memo[idx] != -1) return memo[idx];
+    if (idx == nums.size()-1) return 1; // if we're at the end
+    if (memo[idx] != -1) return memo[idx]; // if we've seen this before
 
     long count = 0;
-    if (idx < nums.size() - 1 && nums[idx + 1] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 1, memo);
-    if (idx < nums.size() - 2 && nums[idx + 2] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 2, memo);
-    if (idx < nums.size() - 3 && nums[idx + 3] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 3, memo);
+    int incr = 1;
+    while (idx < nums.size() - incr && // while we're in bounds
+           nums[idx + incr] - nums[idx] <= MAX_JUMP) // and we can still jump
+    {
+        count += count_combinations(nums, idx + incr, memo); // jump
+        incr++;
+    }
 
-    memo[idx] = count;
+    memo[idx] = count; // got a result, let's save it
     return count;
 }
 
 int main(int argc, char *argv[])
 {
-    vector<int> nums;
+    vector<int> nums = {0}; // start at 0
     read_file(nums);
-    nums.push_back(0); // start at 0
     sort(nums.begin(), nums.end());
     vector<long> memo(nums.size(), -1);
 
