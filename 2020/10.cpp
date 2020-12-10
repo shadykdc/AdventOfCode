@@ -41,10 +41,15 @@ int part1(vector<int>& nums)
 
     for (int i = 1; i < nums.size(); i++)
     {
-        if (nums[i] - nums[i-1] == 3)
-            joltDiffIs3 += 1;
-        else if (nums[i] - nums[i-1] == 1)
+        switch (nums[i] - nums[i-1])
+        {
+        case 1:
             joltDiffIs1 += 1;
+            break;
+        case 3:
+            joltDiffIs3 += 1;
+            break;
+        }
     }
     return joltDiffIs1 * joltDiffIs3;
 }
