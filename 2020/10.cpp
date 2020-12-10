@@ -29,6 +29,8 @@ void read_file(vector<int>& nums)
     while(infile >> num)
     {
         nums.push_back(num);
+        // thought about removing duplicates but I guess the inputs didn't
+        // have any so... my code doesn't account for duplicates anywhere :)
     }
     infile.close();
 }
@@ -48,31 +50,21 @@ int part1(vector<int>& nums)
     return joltDiffIs1 * joltDiffIs3;
 }
 
-int count_combinations(vector<int>& nums, size_t idx)
+long count_combinations(vector<int>& nums, size_t idx, vector<long>& memo)
 {
     if (idx == nums.size()-1) return 1;
-    int count = 0;
-    // int incr = 1;
-    // while (nums[idx + incr] - nums[idx] == 0) incr++;
-    // while (idx + incr < nums.size() - incr &&
-    //        nums[idx + incr] - nums[idx] <= 3)
-    // {
-    //     count += count_combinations(nums, idx + incr);
-    //     incr++;
-    // }
+    if (memo[idx] != -1) return memo[idx];
 
+    long count = 0;
     if (idx < nums.size() - 1 && nums[idx + 1] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 1);
+        count += count_combinations(nums, idx + 1, memo);
     if (idx < nums.size() - 2 && nums[idx + 2] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 2);
+        count += count_combinations(nums, idx + 2, memo);
     if (idx < nums.size() - 3 && nums[idx + 3] - nums[idx] <= 3)
-        count += count_combinations(nums, idx + 3);
-    return count;
-}
+        count += count_combinations(nums, idx + 3, memo);
 
-int part2(vector<int>& nums)
-{
-    return count_combinations(nums, 0);
+    memo[idx] = count;
+    return count;
 }
 
 int main(int argc, char *argv[])
@@ -81,9 +73,10 @@ int main(int argc, char *argv[])
     read_file(nums);
     nums.push_back(0); // start at 0
     sort(nums.begin(), nums.end());
+    vector<long> memo(nums.size(), -1);
 
     cout << "Part 1: " << part1(nums) << endl;
-    cout << "Part 2: " << part2(nums) << endl;
+    cout << "Part 2: " << count_combinations(nums, 0, memo) << endl;
 
     return 0;
 }
