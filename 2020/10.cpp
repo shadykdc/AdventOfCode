@@ -30,8 +30,6 @@ void read_file(vector<int>& nums)
     while(infile >> num)
     {
         nums.push_back(num);
-        // thought about removing duplicates but I guess the inputs didn't
-        // have any so... my code doesn't account for duplicates :)
     }
     infile.close();
 }
