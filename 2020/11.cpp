@@ -54,16 +54,17 @@ int count_adj_occ_seats(vector<string>& grid, size_t r, size_t c)
     return count;
 }
 
+// count visible occupied seats
 int count_visible_occ_seats(vector<string>& grid, size_t r, size_t c)
 {
     int occ_count = 0;
 
-    // check to the down
+    // check down
     int i = 1;
     while (r+i < grid.size() && grid[r+i][c] == '.') i++;
     if (r+i < grid.size() && grid[r+i][c] == '#') occ_count++;
 
-    // check to the up
+    // check up
     i = 1;
     while (r-i >= 0 && grid[r-i][c] == '.') i++;
     if (r-i >= 0 && grid[r-i][c] == '#') occ_count++;
@@ -118,7 +119,7 @@ int seat_shuffle(vector<string>& grid, bool part1, int seats_limit)
                 if (grid[r][c] == '.') continue;
                 size_t adj_occ_seats = part1 ?
                                        count_adj_occ_seats(grid, r, c) :
-                                       count_visible_occ_seats(grid, r, c);
+                                       count_visible_occ_seats(grid, r, c);[]
                 if (adj_occ_seats == 0 && grid[r][c] == 'L')
                 {
                     new_grid[r][c] = '#';
@@ -135,7 +136,6 @@ int seat_shuffle(vector<string>& grid, bool part1, int seats_limit)
         }
         grid = new_grid;
     }
-
     return occupied_count;
 }
 
