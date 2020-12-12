@@ -41,7 +41,8 @@ void read_file(vector<pair<char, int>>& map)
 int part1(vector<pair<char, int>>& map)
 {
     vector<int> counts = {0, 0, 0, 0}; // N E S W
-    int dir = 1; // E
+    vector<int> wp = {10, 1}; // E(+)/W, N(+)/S
+    vector<int> ship = {0, 0};
 
     for (auto pair : map)
     {
@@ -51,8 +52,9 @@ int part1(vector<pair<char, int>>& map)
             int div = pair.second/90;
             for (int i = 0; i < div; i++)
             {
-                if (dir == 0) dir = 3;
-                else dir -= 1;
+                int temp = wp[0];
+                wp[0] = wp[1];
+                wp[1] = temp * -1;
             }
         }
         else if (pair.first == 'R')
@@ -60,32 +62,38 @@ int part1(vector<pair<char, int>>& map)
             int div = pair.second/90;
             for (int i = 0; i < div; i++)
             {
-                if (dir == 3) dir = 0;
-                else dir += 1;
+                int temp = wp[0];
+                wp[0] = wp[1];
+                wp[1] = temp * -1;
             }
         }
         else if (pair.first == 'F')
         {
-            counts[dir] += pair.second;
+            for (int i = 0; i < pair.second; i++)
+            {
+                ship[0] += wp[0];
+                ship[1] += wp[1];
+            }
         }
         else if (pair.first == 'N')
         {
-            counts[0] += pair.second;
+            wp[1] += pair.second;
         }
         else if (pair.first == 'E')
         {
-            counts[1] += pair.second;
+            wp[0] += pair.second;
         }
         else if (pair.first == 'S')
         {
-            counts[2] += pair.second;
+            wp[1] -= pair.second;
         }
         else if (pair.first == 'W')
         {
-            counts[3] += pair.second;
+            wp[0] += pair.second;
         }
+        cout << wp[0] << " " << wp[1] << " " << ship[0] << " " << ship[1] << endl;
     }
-    return (abs(counts[0] - counts[2]) + abs(counts[1] - counts[3]));
+    return abs(ship[0]) + abs(ship[1]);
 }
 
 int main(int argc, char *argv[])
