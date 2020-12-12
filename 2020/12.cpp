@@ -50,7 +50,7 @@ int part1(const vector<pair<char, int>>& map)
     {
         switch(pair.first)
         {
-        case 'L': // rotate ship x degrees
+        case 'L': // rotate ship ccw x degrees
             for (i = 0; i < pair.second/90; i++)
             {
                 switch(dir)

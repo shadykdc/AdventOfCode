@@ -1,15 +1,15 @@
 /*
-    Advent of Code Day 13
+    Advent of Code Day 14
 
     To run on a mac:
 
-        1. Update makefile "DAY" variable to 13
+        1. Update makefile "DAY" variable to 14
         2. Run "make"
         3. Run "./aoc"
 
     Problem:
 
-        https://adventofcode.com/2020/day/13
+        https://adventofcode.com/2020/day/14
 */
 
 #include <iostream>
@@ -18,7 +18,7 @@
 
 using namespace std;
 
-#define INPUT_FILE "input13.txt"
+#define INPUT_FILE "input14.txt"
 
 void read_file()
 {
