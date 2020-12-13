@@ -21,7 +21,7 @@ using namespace std;
 
 #define INPUT_FILE "input13.txt"
 
-int read_file(vector<int>& bus_ids)
+int read_file(vector<pair<int,int>>& bus_ids)
 {
     string str;
     int times;
@@ -37,13 +37,17 @@ int read_file(vector<int>& bus_ids)
     {
         getline(ifs, str);
         std::stringstream ss(str);
+        int idx = 0;
         for (int i; ss >> i;)
         {
-            bus_ids.push_back(i);
+            bus_ids.push_back(make_pair(i, idx));
+            idx++;
             while (ss.peek() == ',' || ss.peek() == 'x')
             {
                 if (ss.peek() == 'x')
-                    bus_ids.push_back(-1);
+                {
+                    idx++;
+                }
                 ss.ignore();
             }
         }
@@ -52,36 +56,55 @@ int read_file(vector<int>& bus_ids)
     return times;
 }
 
-int part1(vector<int>& bus_ids, int time)
+int part1(vector<pair<int,int>>& bus_ids, int time)
 {
     int wait = INT_MAX;
-    int bus_id = 0;
+    int best_bus = 0;
 
-    for (int num : bus_ids)
+    for (auto pair : bus_ids)
     {
-        if (num == -1) continue;
-        for (int i = 0; i < num; i++)
+        int bus_id = pair.first;
+        if (bus_id == -1) continue;
+        for (int i = 0; i < bus_id; i++)
         {
             int depart = time + i;
-            if (depart%num == 0 && i < wait)
+            if (depart%bus_id == 0 && i < wait)
             {
                 wait = i;
-                bus_id = num;
+                best_bus = bus_id;
             }
         }
     }
 
-    return wait * bus_id;
+    return wait * best_bus;
 }
 
-int part2(vector<int>& bus_ids)
+long long part2(vector<pair<int,int>>& bus_ids)
 {
-    return 1;
+    bool success = false;
+    long long time = 100000046082771;
+    while (time%bus_ids[0].first != 0) time++;
+    while (!success)
+    {
+        success = true;
+        for (auto pair : bus_ids)
+        {
+            if ((time+pair.second) % pair.first != 0)
+            {
+                success = false;
+                break;
+            }
+        }
+        if (success) return time;
+        time += bus_ids[0].first;
+    }
+
+    return time;
 }
 
 int main(int argc, char *argv[])
 {
-    vector<int> bus_ids;
+    vector<pair<int,int>> bus_ids;
     int time = read_file(bus_ids);
 
     cout << part1(bus_ids, time) << endl; // 3606
