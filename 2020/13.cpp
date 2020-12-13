@@ -73,26 +73,18 @@ int part1(vector<pair<int,int>>& bus_ids, int time)
     return wait * best_bus;
 }
 
+// chinese remainder theorem basically
 long long part2(vector<pair<int,int>>& bus_ids)
 {
-    bool success = false;
-    long long time = 100000000000000;
-    while (time % bus_ids[0].first != 0) time++;
-    while (!success)
+    long long time = 0;
+    long long increment = 1;
+    for (auto pair : bus_ids)
     {
-        success = true;
-        for (auto pair : bus_ids)
-        {
-            if ((time + pair.second) % pair.first != 0)
-            {
-                success = false;
-                break;
-            }
-        }
-        if (success) return time;
-        time += bus_ids[0].first;
+        while ((time + pair.second) % pair.first != 0)
+            time += increment;
+        increment *= pair.first;
     }
-    return 0;
+    return time;
 }
 
 int main(int argc, char *argv[])
@@ -101,7 +93,7 @@ int main(int argc, char *argv[])
     int time = read_file(bus_ids);
 
     cout << part1(bus_ids, time) << endl; // 3606
-    cout << part2(bus_ids) << endl;
+    cout << part2(bus_ids) << endl; // 379786358533423
 
     return 0;
 }
