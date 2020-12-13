@@ -24,14 +24,13 @@ using namespace std;
 int read_file(vector<pair<int,int>>& bus_ids)
 {
     string str;
-    int times;
+    int time;
     ifstream ifs(INPUT_FILE, ifstream::in);
 
-    // read in the map of trees to grid
     if (ifs.good())
     {
         getline(ifs, str);
-        times = stoi(str);
+        time = stoi(str);
     }
     while(ifs.good())
     {
@@ -44,16 +43,13 @@ int read_file(vector<pair<int,int>>& bus_ids)
             idx++;
             while (ss.peek() == ',' || ss.peek() == 'x')
             {
-                if (ss.peek() == 'x')
-                {
-                    idx++;
-                }
+                if (ss.peek() == 'x') idx++;
                 ss.ignore();
             }
         }
     }
     ifs.close();
-    return times;
+    return time;
 }
 
 int part1(vector<pair<int,int>>& bus_ids, int time)
@@ -63,15 +59,13 @@ int part1(vector<pair<int,int>>& bus_ids, int time)
 
     for (auto pair : bus_ids)
     {
-        int bus_id = pair.first;
-        if (bus_id == -1) continue;
-        for (int i = 0; i < bus_id; i++)
+        for (int i = 0; i < pair.first; i++)
         {
             int depart = time + i;
-            if (depart%bus_id == 0 && i < wait)
+            if (depart % pair.first == 0 && i < wait)
             {
                 wait = i;
-                best_bus = bus_id;
+                best_bus = pair.first;
             }
         }
     }
@@ -82,14 +76,14 @@ int part1(vector<pair<int,int>>& bus_ids, int time)
 long long part2(vector<pair<int,int>>& bus_ids)
 {
     bool success = false;
-    long long time = 100000046082771;
-    while (time%bus_ids[0].first != 0) time++;
+    long long time = 100000000000000;
+    while (time % bus_ids[0].first != 0) time++;
     while (!success)
     {
         success = true;
         for (auto pair : bus_ids)
         {
-            if ((time+pair.second) % pair.first != 0)
+            if ((time + pair.second) % pair.first != 0)
             {
                 success = false;
                 break;
@@ -98,8 +92,7 @@ long long part2(vector<pair<int,int>>& bus_ids)
         if (success) return time;
         time += bus_ids[0].first;
     }
-
-    return time;
+    return 0;
 }
 
 int main(int argc, char *argv[])
