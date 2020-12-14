@@ -26,7 +26,7 @@ using namespace std;
 
 unsigned long part1()
 {
-    vector<bitset<36>> memory;
+    unordered_map<int, bitset<36>> memory;
     int idx;
     string str;
     string mask;
@@ -42,7 +42,6 @@ unsigned long part1()
         if(sscanf(&str[0], "mem[%d] = %s ", &idx, &str[0]) == 2)
         {
             bitset<36> val (stoi(str));
-            if (idx >= memory.size()) memory.resize(idx+1);
             for (int i = 0; i < mask.size(); i++)
             {
                 if (mask[i] != 'X')
@@ -58,14 +57,18 @@ unsigned long part1()
 
     unsigned long sum = 0;
     for (auto val : memory)
-        sum += val.to_ulong();
+        sum += val.second.to_ulong();
 
     return sum;
 }
 
 void comb(int count_x, vector<bitset<36>>& addresses, bitset<36>& mem_addr, string mask)
 {
-    if (count_x == 0) addresses.emplace_back(mem_addr);
+    if (count_x == 0)
+    {
+        addresses.emplace_back(mem_addr);
+        return;
+    }
 
     for (int i = 0; i < mask.size(); i++)
     {
@@ -93,9 +96,10 @@ void populate_mem(const string str, const int idx, const string mask,
     int count_x = 0;
     for (int i = 0; i < mask.size(); i++)
     {
-        size_t mem_addr_i = mem_addr.size() - 1 - i;
-        if (mask[i] == '1')  mem_addr.set(mem_addr_i, 1);
-        else if (mask[i] == 'X') count_x++;
+        if (mask[i] == '1')
+            mem_addr.set(mem_addr.size() - 1 - i, 1);
+        else if (mask[i] == 'X')
+            count_x++;
     }
 
     comb(count_x, addresses, mem_addr, mask);
@@ -138,7 +142,7 @@ unsigned long part2()
 int main(int argc, char *argv[])
 {
     cout << part1() << endl; // 17481577045893
-    cout << part2() << endl; //
+    cout << part2() << endl; // 4160009892257
 
     return 0;
 }
