@@ -25,9 +25,8 @@ size_t part1(vector<int>& input, int stop)
     // key: num; val: last turn it was spoken
     unordered_map<int, int> lookup;
     for (int i = 0; i < input.size(); i++)
-    {
-        lookup[input[i]] = i+1;
-    }
+        lookup[input[i]] = i + 1;
+
     int turn = input.size() + 2;
     int last_spoken = 0;
 
