@@ -17,11 +17,9 @@
 #include <vector>
 #include <unordered_map>
 
-#define MAGIC 2020
-
 using namespace std;
 
-size_t part1(vector<int>& input)
+size_t part1(vector<int>& input, int stop)
 {
 
     // key: num; val: last turn it was spoken
@@ -33,7 +31,7 @@ size_t part1(vector<int>& input)
     int turn = input.size() + 2;
     int last_spoken = 0;
 
-    while (turn <= MAGIC)
+    while (turn <= stop)
     {
         auto got = lookup.find(last_spoken);
         if (got != lookup.end())
@@ -55,7 +53,8 @@ size_t part1(vector<int>& input)
 int main(int argc, char *argv[])
 {
     vector<int> input = {16,12,1,0,15,7,11};
-    cout << part1(input) << endl;;
+    cout << "Part 1: " << part1(input, 2020) << endl; //403
+    cout << "Part 2: " << part1(input, 30000000) << endl; // 6823
 
     return 0;
 }
