@@ -27,24 +27,25 @@ size_t part1(vector<int>& input, int stop)
     for (int i = 0; i < input.size(); i++)
         lookup[input[i]] = i + 1;
 
-    int turn = input.size() + 1;
+    // the turn that was just taken and the number that was just spoken
+    int last_turn = input.size() + 1;
     int last_spoken = 0;
 
-    while (turn < stop)
+    while (last_turn < stop)
     {
         auto got = lookup.find(last_spoken);
         if (got != lookup.end())
         {
-            int speak = turn - lookup[last_spoken];
-            lookup[last_spoken] = turn;
+            int speak = last_turn - lookup[last_spoken];
+            lookup[last_spoken] = last_turn;
             last_spoken = speak;
         }
         else
         {
-            lookup[last_spoken] = turn;
+            lookup[last_spoken] = last_turn;
             last_spoken = 0;
         }
-        turn++;
+        last_turn++;
     }
     return last_spoken;
 }
