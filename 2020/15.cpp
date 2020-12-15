@@ -15,20 +15,47 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
+
+#define MAGIC 2020
 
 using namespace std;
 
-#define INPUT_FILE "input15.txt"
-
-void read_file()
+size_t part1(vector<int>& input)
 {
-    return;
+
+    // key: num; val: last turn it was spoken
+    unordered_map<int, int> lookup;
+    for (int i = 0; i < input.size(); i++)
+    {
+        lookup[input[i]] = i+1;
+    }
+    int turn = input.size() + 2;
+    int last_spoken = 0;
+
+    while (turn <= MAGIC)
+    {
+        auto got = lookup.find(last_spoken);
+        if (got != lookup.end())
+        {
+            int speak = turn - 1 - lookup[last_spoken];
+            lookup[last_spoken] = turn - 1;
+            last_spoken = speak;
+        }
+        else
+        {
+            lookup[last_spoken] = turn - 1;
+            last_spoken = 0;
+        }
+        turn++;
+    }
+    return last_spoken;
 }
 
 int main(int argc, char *argv[])
 {
-
-    read_file();
+    vector<int> input = {16,12,1,0,15,7,11};
+    cout << part1(input) << endl;;
 
     return 0;
 }
