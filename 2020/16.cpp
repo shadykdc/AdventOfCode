@@ -145,25 +145,23 @@ bool dfs(vector<vector<int>>& tickets, vector<FieldRule>& rules, queue<int>& ind
     if (indices.size() == 0)
         return true;
 
-    for (int i = 0; i < indices.size(); i++)
+    for (int j = 0 ; j < rules.size(); j++)
     {
-        int idx = indices.front();
-        indices.pop();
-        for (int j = 0 ; j < rules.size(); j++)
+        FieldRule* rule = &rules[j];
+        if (rule->index != INIT_INDEX) continue;
+        for (int i = 0; i < indices.size(); i++)
         {
-            FieldRule* rule = &rules[j];
-            if (rule->index != INIT_INDEX) continue;
+            int idx = indices.front();
+            indices.pop();
             if (valid_for_all_tickets(tickets, idx, rule))
             {
                 rule->index = idx;
                 if (dfs(tickets, rules, indices))
-                {
                     return true;
-                }
                 rule->index = INIT_INDEX;
             }
+            indices.push(idx);
         }
-        indices.push(idx);
     }
     return false;
 }
@@ -172,17 +170,14 @@ long long part2(vector<vector<int>>& tickets, vector<FieldRule>& rules, vector<i
 {
     // assign index within rules to correct values
     queue<int> indices;
-    for (int i = 0; i < tickets[0].size(); i++)
+    for (int i = 0; i < my_ticket.size(); i++)
     {
         indices.push(i);
     }
 
     dfs(tickets, rules, indices);
 
-    for (auto rule : rules)
-    {
-        cout << rule.name << " has index " << rule.index << endl;
-    }
+    for (auto id : rules) cout << id.index << " "; cout << endl;
 
     return get_result(rules, my_ticket);
 }
