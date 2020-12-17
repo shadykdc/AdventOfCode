@@ -126,55 +126,122 @@ long long get_result(vector<FieldRule>& rules, vector<int>& my_ticket)
     return result;
 }
 
-bool valid_for_all_tickets(vector<vector<int>>& tickets, int idx, FieldRule* rule)
+void populate_possibilities(
+    vector<vector<bool>>& possibilities,
+    vector<FieldRule>& rules,
+    vector<int>& ticket)
 {
-    for (auto ticket : tickets)
+    // for each rule (the rows)
+    for (int r = 0; r < possibilities.size(); r++)
     {
-        int field = ticket[idx];
-        if (!((field >= rule->start1 && field <= rule->end1) ||
-              (field >= rule->start2 && field <= rule->end2)))
+        // for each field (the columns)
+        for (int field = 0; field < possibilities[0].size(); field++)
         {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool dfs(vector<vector<int>>& tickets, vector<FieldRule>& rules, vector<bool>& indices)
-{
-    if (indices.size() == 0)
-        return true;
-
-    for (int j = 0 ; j < rules.size(); j++)
-    {
-        FieldRule* rule = &rules[j];
-        if (rule->index != INIT_INDEX) continue;
-        for (int idx = 0; idx < indices.size(); idx++)
-        {
-            if (indices[idx]) continue;
-            if (valid_for_all_tickets(tickets, idx, rule))
+            // if it is out of bounds
+            int value = ticket[field];
+            if (value < rules[r].start1 || value > rules[r].end2 ||
+               (value > rules[r].end1 && value < rules[r].start2))
             {
-                rule->index = idx;
-                indices[idx] = true;
-                for (auto id : rules) cout << id.index << " "; cout << endl;
-                if (dfs(tickets, rules, indices))
-                    return true;
-                indices[idx] = false;
-                rule->index = INIT_INDEX;
+                possibilities[r][field] = false;
             }
         }
     }
-    return false;
 }
 
-long long part2(vector<vector<int>>& tickets, vector<FieldRule>& rules, vector<int>& my_ticket)
+int prune_possibilities(
+    vector<vector<bool>>& possibilities,
+    vector<FieldRule>& rules,
+    vector<int>& ticket)
 {
-    // assign index within rules to correct values
-    vector<bool> indices (my_ticket.size(), false);
+    if (possibilities.size() == 0) return 0;
 
-    dfs(tickets, rules, indices);
+    // check rows
+    for (int r = 0; r < possibilities.size(); r++)
+    {
+        int count = 0;
+        int col = -1;
+        for (int c = 0; c < possibilities[0].size(); c++)
+            if (possibilities[r][c]) { count++; col = c; }
+        if (count == 1)
+            for (int row = 0; row < possibilities[0].size(); row++)
+            {
+                if (r == row) continue;
+                possibilities[row][col] = false;
+            }
+    }
 
-    for (auto id : rules) cout << id.index << " "; cout << endl;
+    // check cols
+    for (int c = 0; c < possibilities[0].size(); c++)
+    {
+        // if col contains one true, set all in row to false
+        int count = 0;
+        int row = -1;
+        for (int r = 0; r < possibilities.size(); r++)
+            if (possibilities[r][c]) { count++; row = r; }
+        if (count == 1)
+            for (int col = 0; col < possibilities[0].size(); col++)
+            {
+                if (col == c) continue;
+                possibilities[row][col] = false;
+            }
+    }
+
+    int count = 0;
+    for (auto row : possibilities)
+        for (auto elem : row)
+            if (elem) count++;
+    return count;
+}
+
+void print_possibilities(vector<vector<bool>> possibilities)
+{
+    for (auto row : possibilities)
+    {
+        for (auto elem : row)
+        {
+            if (elem) cout << "X";
+            else cout << ".";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void populate_rules_indices(
+    vector<vector<bool>>& possibilities,
+    vector<FieldRule>& rules)
+{
+    for (int r = 0; r < possibilities.size(); r++)
+    {
+        for (int c = 0; c < possibilities[0].size(); c++)
+        {
+            if (possibilities[r][c])
+            {
+                rules[r].index = c;
+            }
+        }
+    }
+}
+
+long long part2(
+    vector<vector<int>>& tickets,
+    vector<FieldRule>& rules,
+    vector<int>& my_ticket)
+{
+    vector<vector<bool>> possibilities(my_ticket.size(),
+                                       vector<bool>(rules.size(), true));
+
+    for (auto ticket : tickets)
+        populate_possibilities(possibilities, rules, ticket);
+
+    print_possibilities(possibilities);
+
+    while(prune_possibilities(possibilities, rules, my_ticket) > possibilities.size())
+    {
+        print_possibilities(possibilities);
+    }
+
+    populate_rules_indices(possibilities, rules);
 
     return get_result(rules, my_ticket);
 }
@@ -185,7 +252,7 @@ int main(int argc, char *argv[])
     vector<FieldRule> rules;
 
     read_file1(tickets); // 32842
-    read_file2(rules);
+    read_file2(rules); // 2628667251989
 
     cout << part1(tickets, rules) << endl;
     vector<int> my_ticket = {157,59,163,149,83,131,107,89,109,113,151,53,127,97,79,103,101,173,167,61};
