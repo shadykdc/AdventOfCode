@@ -262,9 +262,12 @@ int main(int argc, char *argv[])
 }
 
 /*
+    Solution Explanation
+-----------------------------
+I made a 20 (rules) x 20 (fields) grid of the possibilities based on the ranges
+and then pruned them by checking which rows and columns only had one solution.
 
-I made a 20 x 20 grid of the possibilities based on the ranges and then pruned
-them by checking which rows and columns only had one solution (one X).
+Here you can see the pruning in action from one round to the next.
 
 .X.XX.XXXXX.XXXXXXXX
 .X.XX.XX..X.XXXXX..X
@@ -287,6 +290,7 @@ XXXXXXXXXXXXXXXXXXXX
 .X.X..X...X.XXXX...X
 .X........X...X.....
 
+
 ...XX.XXXX..XX.XXXXX
 ...XX.XX....XX.XX..X
 ...XX.XX.X..XX.XXXXX
@@ -307,6 +311,7 @@ X...................
 ...........X........
 ...X..X.....XX.X...X
 ..........X.........
+
 
 ........X...........
 ...XX..X....XX..X..X
@@ -329,6 +334,7 @@ X...................
 ...X........XX.....X
 ..........X.........
 
+
 ........X...........
 ....X..X....XX..X..X
 ..................X.
@@ -350,6 +356,7 @@ X...................
 ............XX.....X
 ..........X.........
 
+
 ........X...........
 ....X..X........X...
 ..................X.
@@ -370,4 +377,5 @@ X...................
 ...........X........
 ...................X
 ..........X.........
+
 */
