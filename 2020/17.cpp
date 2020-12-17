@@ -48,6 +48,7 @@ Point::Point(int _x, int _y, int _z, int _w)
 class Space
 {
 private:
+    // too lazy to make hash function to make this a set and be faster
     vector<Point> active_pts = {};
 public:
     Space();
@@ -203,7 +204,7 @@ int main(int argc, char *argv[])
 
     read_file(grid, &space);
 
-    cout << "Part 2: " << part2(&space) << endl; // 424
+    cout << "Part 2: " << part2(&space) << endl; // 2460
 
     return 0;
 }
