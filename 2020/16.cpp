@@ -16,16 +16,21 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
-#include <unordered_map>
+#include <queue>
 
 using namespace std;
 
 #define INPUT_FILE1 "input16.1.txt"
 #define INPUT_FILE2 "input16.2.txt"
+#define INIT_INDEX -2
 
-struct Range
+struct FieldRule
 {
-    int end;
+    int start1;
+    int end1;
+    int start2;
+    int end2;
+    int index;
     string name;
 };
 
@@ -53,40 +58,39 @@ void read_file1(vector<vector<int>>& tickets)
     return;
 }
 
-void read_file2(unordered_map<int, Range>& rules)
+void read_file2(vector<FieldRule>& rules)
 {
     ifstream ifs(INPUT_FILE2, ifstream::in);
     string str;
-    int n1, n2, n3, n4;
 
     while(ifs.good())
     {
         getline(ifs, str);
-        Range range;
+        FieldRule rule;
+        rule.index = INIT_INDEX;
         if (str.find(':') == string::npos) break;
-        range.name = str.substr(0, str.find(':'));
+        rule.name = str.substr(0, str.find(':'));
         string nums =  str.substr(str.find(':') + 2);
-        if (sscanf(&nums[0], "%d-%d or %d-%d", &n1, &n2, &n3, &n4) != 4) break;
-        range.end = n2;
-        rules[n1] = range;
-        range.end = n4;
-        rules[n3] = range;
+        if (sscanf(&nums[0], "%d-%d or %d-%d",
+            &rule.start1, &rule.end1, &rule.start2, &rule.end2) != 4) break;
+        rules.push_back(rule);
     }
 
     ifs.close();
 }
 
-bool invalid(int field, unordered_map<int, Range>& rules)
+bool invalid(int field, vector<FieldRule>& rules)
 {
-    for (auto item : rules)
+    for (auto rule : rules)
     {
-        if (field >= item.first && field <= item.second.end)
+        if ((field >= rule.start1 && field <= rule.end1) ||
+            (field >= rule.start2 && field <= rule.end2))
             return false;
     }
     return true;
 }
 
-int part1(vector<vector<int>>& tickets, unordered_map<int, Range>& rules)
+int part1(vector<vector<int>>& tickets, vector<FieldRule>& rules)
 {
     int sum = 0;
     for (int i = 0; i < tickets.size(); i++)
@@ -111,23 +115,89 @@ int part1(vector<vector<int>>& tickets, unordered_map<int, Range>& rules)
     return sum;
 }
 
-int part2()
+long long get_result(vector<FieldRule>& rules, vector<int>& my_ticket)
 {
-    return 1;
+    long long result = 1;
+    for (auto rule : rules)
+    {
+        if (rule.name.substr(0, strlen("departure")).compare("departure") == 0)
+            result *= my_ticket[rule.index];
+    }
+    return result;
+}
+
+bool valid_for_all_tickets(vector<vector<int>>& tickets, int idx, FieldRule* rule)
+{
+    for (auto ticket : tickets)
+    {
+        int field = ticket[idx];
+        if (!((field >= rule->start1 && field <= rule->end1) ||
+              (field >= rule->start2 && field <= rule->end2)))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool dfs(vector<vector<int>>& tickets, vector<FieldRule>& rules, queue<int>& indices)
+{
+    if (indices.size() == 0)
+        return true;
+
+    for (int i = 0; i < indices.size(); i++)
+    {
+        int idx = indices.front();
+        indices.pop();
+        for (int j = 0 ; j < rules.size(); j++)
+        {
+            FieldRule* rule = &rules[j];
+            if (rule->index != INIT_INDEX) continue;
+            if (valid_for_all_tickets(tickets, idx, rule))
+            {
+                rule->index = idx;
+                if (dfs(tickets, rules, indices))
+                {
+                    return true;
+                }
+                rule->index = INIT_INDEX;
+            }
+        }
+        indices.push(idx);
+    }
+    return false;
+}
+
+long long part2(vector<vector<int>>& tickets, vector<FieldRule>& rules, vector<int>& my_ticket)
+{
+    // assign index within rules to correct values
+    queue<int> indices;
+    for (int i = 0; i < tickets[0].size(); i++)
+    {
+        indices.push(i);
+    }
+
+    dfs(tickets, rules, indices);
+
+    for (auto rule : rules)
+    {
+        cout << rule.name << " has index " << rule.index << endl;
+    }
+
+    return get_result(rules, my_ticket);
 }
 
 int main(int argc, char *argv[])
 {
     vector<vector<int>> tickets;
-    unordered_map<int, Range> rules;
+    vector<FieldRule> rules;
 
     read_file1(tickets); // 32842
     read_file2(rules);
 
     cout << part1(tickets, rules) << endl;
-    // vector<int> my_ticket = {157,59,163,149,83,131,107,89,109,113,151,53,127,97,79,103,101,173,167,61};
-    vector<int> my_ticket = {11,12,13};
-    cout << part2() << endl;
+    vector<int> my_ticket = {157,59,163,149,83,131,107,89,109,113,151,53,127,97,79,103,101,173,167,61};
+    cout << part2(tickets, rules, my_ticket) << endl;
 
     return 0;
 }
