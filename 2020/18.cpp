@@ -42,50 +42,57 @@ void read_file(vector<string>& equations)
     return;
 }
 
-int compute(string equation)
+long compute(string equation, size_t start, size_t* end)
 {
     stack<char> syms;
-    int current = 0;
-    int num;
+    long current = 0, num = 0;
+    char ch;
 
-    for (auto ch : equation)
+    for (size_t i = start; i < equation.size(); i++)
     {
+        ch = equation[i];
         switch(ch)
         {
         case '+':
         case '*':
             syms.push(ch);
+            continue;
+        case ')':
+            if (end != NULL) *end = i;
+            return current;
+        case '(':
+            num = compute(equation, i+1, &i);
             break;
         default: // num
             num = ch - '0';
-            if (syms.size() != 0)
-            {
-                switch (syms.top())
-                {
-                case '*':
-                    current *= num;
-                    break;
-                case '+':
-                    current += num;
-                    break;
-                }
-                syms.pop();
-                syms.pop();
-            }
-            else
-                current = ch - '0';
-            syms.push('0');
         }
+        if (syms.size() != 0)
+        {
+            switch (syms.top())
+            {
+            case '*':
+                current *= num;
+                break;
+            case '+':
+                current += num;
+                break;
+            }
+            syms.pop();
+            syms.pop();
+        }
+        else
+            current = ch - '0';
+        syms.push('0');
     }
     return current;
 }
 
-int part1(vector<string>& equations)
+long part1(vector<string>& equations)
 {
-    int count = 0;
+    long count = 0;
     for (auto equation : equations)
     {
-        count += compute(equation);
+        count += compute(equation, 0, NULL);
     }
     return count;
 }
