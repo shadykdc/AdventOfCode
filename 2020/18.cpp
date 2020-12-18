@@ -63,25 +63,21 @@ int compute(string equation)
                 switch (syms.top())
                 {
                 case '*':
-                    syms.pop();
                     current *= num;
-                    syms.pop();
                     break;
                 case '+':
-                    syms.pop();
                     current += num;
-                    syms.pop();
                     break;
                 }
+                syms.pop();
+                syms.pop();
             }
             else
                 current = ch - '0';
-            cout << current << endl;
             syms.push('0');
         }
     }
     if (syms.empty()) return 0;
-    cout << syms.size() << endl;
     return current;
 }
 
