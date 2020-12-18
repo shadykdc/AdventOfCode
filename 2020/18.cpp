@@ -45,7 +45,7 @@ void read_file(vector<string>& equations)
 long compute(string equation, size_t start, size_t* end)
 {
     stack<char> syms;
-    long current = 0, num = 0;
+    long left_num = 0, right_num = 0;
     char ch;
 
     for (size_t i = start; i < equation.size(); i++)
@@ -59,32 +59,33 @@ long compute(string equation, size_t start, size_t* end)
             continue;
         case ')':
             if (end != NULL) *end = i;
-            return current;
+            return left_num;
         case '(':
-            num = compute(equation, i+1, &i);
+            right_num = compute(equation, i+1, &i);
             break;
-        default: // num
-            num = ch - '0';
+        default: // number
+            right_num = ch - '0';
         }
         if (syms.size() != 0)
         {
             switch (syms.top())
             {
             case '*':
-                current *= num;
+                left_num *= right_num;
                 break;
             case '+':
-                current += num;
+                left_num += right_num;
                 break;
             }
             syms.pop();
             syms.pop();
         }
         else
-            current = ch - '0';
+            if (right_num) left_num = right_num;
+            else left_num = ch - '0';
         syms.push('0');
     }
-    return current;
+    return left_num;
 }
 
 long part1(vector<string>& equations)
@@ -101,7 +102,7 @@ int main(int argc, char *argv[])
 {
     vector<string> equations;
     read_file(equations);
-    cout << "Part 1: " << part1(equations) << endl;
+    cout << "Part 1:\n" << part1(equations) << endl;
 
     return 0;
 }
