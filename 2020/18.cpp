@@ -15,20 +15,83 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
 #define INPUT_FILE "input18.txt"
 
-void read_file()
+void read_file(vector<string>& equations)
 {
+    ifstream ifs(INPUT_FILE, ifstream::in);
+    string equation;
+
+    while (ifs.good())
+    {
+        getline(ifs, equation);
+        equations.push_back(equation);
+    }
+    ifs.close();
     return;
+}
+
+int compute(string equation)
+{
+    stack<char> syms;
+    char ch;
+    int current = 0;
+    int num;
+    std::stringstream ss(equation);
+
+    while (ss >> ch)
+    {
+        switch(ch)
+        {
+        case '+':
+        case '*':
+            syms.push(ch);
+            break;
+        default: // num
+            num = ch - '0';
+            if (syms.size() != 0)
+            {
+                switch (syms.top())
+                {
+                case '*':
+                    syms.pop();
+                    current *= num;
+                    break;
+                case '+':
+                    syms.pop();
+                    current += num;
+                    break;
+                }
+            }
+            else
+                current = ch - '0';
+            cout << current << endl;
+            syms.push('0');
+        }
+    }
+    if (syms.empty()) return 0;
+    return current;
+}
+
+int part1(vector<string>& equations)
+{
+    int count = 0;
+    for (auto equation : equations)
+    {
+        count += compute(equation);
+    }
+    return count;
 }
 
 int main(int argc, char *argv[])
 {
-
-    read_file();
+    vector<string> equations;
+    read_file(equations);
+    cout << "Part 1: " << part1(equations) << endl;
 
     return 0;
 }
