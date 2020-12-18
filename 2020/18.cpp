@@ -60,10 +60,12 @@ int compute(string equation)
                 case '*':
                     syms.pop();
                     current *= num;
+                    syms.pop();
                     break;
                 case '+':
                     syms.pop();
                     current += num;
+                    syms.pop();
                     break;
                 }
             }
@@ -74,6 +76,7 @@ int compute(string equation)
         }
     }
     if (syms.empty()) return 0;
+    cout << syms.size() << endl;
     return current;
 }
 
