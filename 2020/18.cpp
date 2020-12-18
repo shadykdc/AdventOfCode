@@ -29,7 +29,14 @@ void read_file(vector<string>& equations)
     while (ifs.good())
     {
         getline(ifs, equation);
-        equations.push_back(equation);
+        std::stringstream ss(equation);
+        string str;
+        char ch;
+        while (ss >> ch)
+        {
+            str.push_back(ch);
+        }
+        equations.push_back(str);
     }
     ifs.close();
     return;
@@ -38,12 +45,10 @@ void read_file(vector<string>& equations)
 int compute(string equation)
 {
     stack<char> syms;
-    char ch;
     int current = 0;
     int num;
-    std::stringstream ss(equation);
 
-    while (ss >> ch)
+    for (auto ch : equation)
     {
         switch(ch)
         {
