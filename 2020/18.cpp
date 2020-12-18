@@ -77,7 +77,6 @@ int compute(string equation)
             syms.push('0');
         }
     }
-    if (syms.empty()) return 0;
     return current;
 }
 
