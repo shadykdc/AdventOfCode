@@ -80,9 +80,10 @@ long compute(string equation, size_t start, size_t* end)
             syms.pop();
             syms.pop();
         }
+        else if (right_num)
+            left_num = right_num;
         else
-            if (right_num) left_num = right_num;
-            else left_num = ch - '0';
+            left_num = ch - '0';
         syms.push('0');
     }
     return left_num;
