@@ -91,7 +91,7 @@ void Space::print()
 // returns false if point already existed
 bool Space::activate_pt(int x, int y, int z)
 {
-    if (pt_is_active(x, y, z)) return false;;
+    if (pt_is_active(x, y, z)) return false;
     Point p(x, y, z);
     active_pts.push_back(p);
     x_min = min(x_min, x);
