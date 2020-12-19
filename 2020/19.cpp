@@ -18,7 +18,8 @@
 
 using namespace std;
 
-#define INPUT_FILE "input19.txt"
+#define INPUT_FILE_1 "input19.1.txt"
+#define INPUT_FILE_2 "input19.2.txt"
 
 void read_file()
 {
