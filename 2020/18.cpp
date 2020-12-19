@@ -107,7 +107,6 @@ long compute2(string equation, size_t start, size_t* end)
         {
         case '+':
             to_sum.push_back(nums.top());
-            cout << "pushed " << nums.top() << " to to_sum." << endl;
             nums.pop();
             last_op = '+';
             break;
@@ -119,10 +118,8 @@ long compute2(string equation, size_t start, size_t* end)
                 for (auto num : to_sum) sum += num;
                 nums.push(sum);
                 to_sum.clear();
-                cout << "pushed sum " << sum << " to nums." << endl;
             }
             to_multiply.push_back(nums.top());
-            cout << "pushed " << nums.top() << " to to_multiply." << endl;
             nums.pop();
             last_op = '+';
             break;
@@ -131,13 +128,10 @@ long compute2(string equation, size_t start, size_t* end)
             goto Exit;
             return prod;
         case '(':
-            cout << "new call" << endl;
             nums.push(compute2(equation, i+1, &i));
-            cout << "pushed " << nums.top() << " to nums." << endl;
             break;
         default: // number
             nums.push(ch - '0');
-            cout << "pushed " << ch - '0' << " to nums." << endl;
         }
     }
 Exit:
@@ -151,16 +145,13 @@ Exit:
         sum = 0;
         for (auto num : to_sum) sum += num;
         to_multiply.push_back(sum);
-        cout << "pushed sum " << sum << " to to_multiply." << endl;
     }
 
     prod = 1;
     for (auto num : to_multiply)
     {
-        cout << num << " ";
         prod *= num;
     }
-    cout << " = " << prod << endl;
 
     return prod;
 }
@@ -189,8 +180,8 @@ int main(int argc, char *argv[])
 {
     vector<string> equations;
     read_file(equations);
-    cout << "Part 1:\n" << part1(equations) << endl;
-    cout << "Part 2:\n" << part2(equations) << endl;
+    cout << "Part 1: " << part1(equations) << endl; // 9535936849815
+    cout << "Part 2: " << part2(equations) << endl; // 472171581333710
 
     return 0;
 }
