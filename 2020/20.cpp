@@ -73,31 +73,46 @@ public:
 
     }
 
-    // returns true if edge matches edge of Tile t
-    // edge = 0 --> tile t is to the right and matches
-    // edge = 1 --> tile t is below and matches
-    bool matches(Tile* t, int edge)
+    // returns count of edges that match
+    int count_edge_matches(Tile* t)
     {
+        int count = 4;
         int dim = pattern.size();
-        if (edge == 0)
+
+        // yay for perfect square tiles
+        for (int i = 0; i < dim; i++) // set Tile t to the right
         {
-            // yay for perfect square tiles
-            for (int i = 0; i < dim; i++)
+            if (pattern[i][dim-1] != t->pattern[i][0])
             {
-                if (pattern[i][dim-1] != t->pattern[i][0])
-                    return false;
+                count--;
+                break;
             }
         }
-        else if (edge == 1)
+        for (int i = 0; i < dim; i++) // set Tile t to the bottom
         {
-            // yay for perfect square tiles
-            for (int i = 0; i < dim; i++)
+            if (pattern[dim-1][i] != t->pattern[0][i])
             {
-                if (pattern[dim-1][i] != t->pattern[0][i])
-                    return false;
+                count--;
+                break;
             }
         }
-        return true;
+        for (int i = 0; i < dim; i++) // set Tile t to the left
+        {
+            if (pattern[0][i] != t->pattern[i][dim-1])
+            {
+                count--;
+                break;
+            }
+        }
+        for (int i = 0; i < dim; i++) // set Tile t to the top
+        {
+            if (pattern[0][i] != t->pattern[dim-1][i])
+            {
+                count--;
+                break;
+            }
+        }
+        return count;
     }
 };
 
@@ -131,7 +146,7 @@ void read_file(unordered_map<int, Tile>& tiles, vector<int>& ids)
     ifs.close();
     return;
 }
-
+/*
 bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
     int dim = sqrt(ids.size()); // 3
@@ -146,40 +161,42 @@ bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
     }
     return true;
 }
-
+*/
 int count_compatible_edges(unordered_map<int, Tile>& tiles, vector<int>& ids, int idx)
 {
-
-    return 1;
-}
-
-bool find_solution(unordered_map<int, Tile>& tiles, vector<int>& ids)
-{
-    priority_queue <pair<int, int>> pq; // count, id
+    int count = 0;
     for (int i = 0; i < ids.size(); i++)
     {
-        int count = count_compatible_edges(tiles, ids, i);
-        pq.push(make_pair(count, i));
-        if (pq.size() > 4) pq.pop();
+        if (i == idx) continue;
+        count += tiles[ids[idx]].count_edge_matches(&tiles[ids[i]]);
+        tiles[ids[idx]].flip();
+        count += tiles[ids[idx]].count_edge_matches(&tiles[ids[i]]);
+        tiles[ids[idx]].flip(); // todo: remove?
     }
 
-    int prod = 1;
-    while(pq.size())
-    {
-        prod *= pq.top().second;
-        pq.pop();
-    }
-    return prod;
+    return count;
 }
 
 long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    if (!find_solution(tiles, ids))
-        cout << "No solution found." << endl;
+    priority_queue <pair<int, int>> pq; // count, id
 
-    int size = ids.size();
-    int sq_rt = sqrt(size);
-    return (ids[0] * ids[sq_rt-1] * ids[size-sq_rt] * ids[size-1]);
+    // basically, we're looking for the corner pieces of a puzzle
+    for (int i = 0; i < ids.size(); i++)
+    {
+        int count = count_compatible_edges(tiles, ids, i);
+        pq.push(make_pair(count, ids[i]));
+        if (pq.size() > 4) pq.pop();
+    }
+
+    long long prod = 1;
+    while(pq.size())
+    {
+        cout << pq.top().second << endl;
+        prod *= pq.top().second;
+        pq.pop();
+    }
+    return prod;
 }
 
 int main(int argc, char *argv[])
