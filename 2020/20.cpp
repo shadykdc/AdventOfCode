@@ -17,6 +17,7 @@
 #include <vector>
 #include <unordered_map>
 #include <math.h>
+#include <queue>
 
 using namespace std;
 
@@ -146,22 +147,39 @@ bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
     return true;
 }
 
-void find_solution(unordered_map<int, Tile>& tiles, vector<int> ids, int idx)
+int count_compatible_edges(unordered_map<int, Tile>& tiles, vector<int>& ids, int idx)
 {
-    if (success(tiles, ids)) return;
 
-
-
-    return;
+    return 1;
 }
 
-long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
+bool find_solution(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    find_solution(tiles, ids, 0);
+    priority_queue <pair<int, int>> pq; // count, id
+    for (int i = 0; i < ids.size(); i++)
+    {
+        int count = count_compatible_edges(tiles, ids, i);
+        pq.push(make_pair(count, i));
+        if (pq.size() > 4) pq.pop();
+    }
+
+    int prod = 1;
+    while(pq.size())
+    {
+        prod *= pq.top().second;
+        pq.pop();
+    }
+    return prod;
+}
+
+long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
+{
+    if (!find_solution(tiles, ids))
+        cout << "No solution found." << endl;
 
     int size = ids.size();
     int sq_rt = sqrt(size);
-    return ids[0] * ids[sq_rt-1] * ids[size-sq_rt] * ids[size-1];
+    return (ids[0] * ids[sq_rt-1] * ids[size-sq_rt] * ids[size-1]);
 }
 
 int main(int argc, char *argv[])
