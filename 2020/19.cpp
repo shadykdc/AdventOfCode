@@ -17,6 +17,7 @@
 #include <vector>
 #include <unordered_map>
 #include <sstream>
+#include <unordered_set>
 
 using namespace std;
 
@@ -27,21 +28,13 @@ class MapItem
 {
 private:
 public:
-    // e.g. 115 24 | 122 36
-    int a; // 115
-    int b; // 24
-    int c; // 122 (or -1)
-    int d; // 36 (or -1)
-    char ch; // "" (or "a", etc.)
-    MapItem() { a = -1; b = -1; c = -1; d = -1; ch = '\0'; }
-    MapItem(int _a, int _b, int _c, int _d, char _ch)
-    {
-        a = _a; b = _b; c = _c; d = _d;
-        ch = _ch;
-    }
+    vector<vector<int>> combs;
+    char ch;
+    MapItem() { ch = '\0'; }
+    MapItem(char _ch) { ch = _ch; }
 };
 
-void read_file(vector<string>& strs, unordered_map<int, MapItem>& map)
+void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
 {
     FILE* pfile = fopen(INPUT_FILE_1, "r");
     if (pfile == NULL)
@@ -51,8 +44,8 @@ void read_file(vector<string>& strs, unordered_map<int, MapItem>& map)
     }
 
     // I got lazy
-    map[24] = MapItem(-1, -1, -1, -1, 'b');
-    map[36] = MapItem(-1, -1, -1, -1, 'a');
+    map[24] = MapItem('b');
+    map[36] = MapItem('a');
 
     ifstream ifs1(INPUT_FILE_1, ifstream::in);
     string str;
@@ -62,20 +55,25 @@ void read_file(vector<string>& strs, unordered_map<int, MapItem>& map)
         getline(ifs1, str);
         std::stringstream ss(str);
         if (str.size() == 0) break;
-        int idx;
-        int a = -1, b = -1, c = -1, d = -1;
+        int idx, num;
         if (ss >> idx)
         {
             if (ss.peek() == ':')
                 ss.ignore();
-            if (ss >> a && ss >> b && ss.peek() == '|')
+            map[idx] = MapItem('\0');
+            vector<int> comb;
+            while (ss >> num)
             {
-                ss.ignore();
-                if (ss >> c)
-                    ss >> d;
+                comb.push_back(num);
+                if (ss.peek() == '|')
+                {
+                    map[idx].combs.push_back(comb);
+                    comb.clear();
+                    ss.ignore();
+                }
             }
+            map[idx].combs.push_back(comb);
         }
-        map[idx] = MapItem(a, b, c, d, '\0');
     }
 
     ifs1.close();
@@ -84,22 +82,57 @@ void read_file(vector<string>& strs, unordered_map<int, MapItem>& map)
     while (ifs2.good())
     {
         getline(ifs2, str);
-        strs.push_back(str);
+        strs.insert(str);
     }
     ifs2.close();
     return;
 }
 
+void get_matches(nordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx,
+vector<string>& matches, string comb)
+{
+    string comb;
+    if (map[idx].ch != '\0')
+    {
+        comb += map[idx].ch;
+        return;
+    }
+
+    for (auto list : map[idx].combs)
+    {
+        string str;
+        for (int i = 0; i < list.size(); i++)
+        {
+            get_matches(strs, map, list[i], matches, comb);
+            str += comb;
+        }
+    }
+    return;
+}
+
+// return the number of messages that completely match rule 0
+int part1(unordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx)
+{
+    vector<string> matches;
+
+    get_matches(strs, map, idx, matches, "");
+
+    int count = 0;
+    for (auto str : matches)
+    {
+        if (strs.find(str) != strs.end())
+            count ++;
+    }
+    return count;
+}
+
 int main(int argc, char *argv[])
 {
-    vector<string> strs;
+    unordered_set<string> strs;
     unordered_map<int, MapItem> map;
     read_file(strs, map);
 
-    int idx = 126;
-    cout << "map[" << idx << "] = " << map[idx].a << " "
-    << map[idx].b << " " << map[idx].c << " " << map[idx].d << " "
-    << map[idx].ch << "--" << endl;
+    cout << "Part 1: " << part1(strs, map, 0) << endl;
 
     return 0;
 }
