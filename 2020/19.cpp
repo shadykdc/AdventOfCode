@@ -88,25 +88,10 @@ void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
     return;
 }
 
-void get_matches(nordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx,
+void get_matches(unordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx,
 vector<string>& matches, string comb)
 {
-    string comb;
-    if (map[idx].ch != '\0')
-    {
-        comb += map[idx].ch;
-        return;
-    }
 
-    for (auto list : map[idx].combs)
-    {
-        string str;
-        for (int i = 0; i < list.size(); i++)
-        {
-            get_matches(strs, map, list[i], matches, comb);
-            str += comb;
-        }
-    }
     return;
 }
 
