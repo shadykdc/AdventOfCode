@@ -101,10 +101,10 @@ bool player1Wins(deque<int>& player1, deque<int>& player2)
 {
     unordered_set<string> seen;
 
-    while (!seen_before(player1, player2, seen))
+    while (player1.size() && player2.size())
     {
-        if (player1.size() == 0) return false;
-        if (player2.size() == 0) return true;
+        if (seen_before(player1, player2, seen))
+            return true;
         int card1 = player1.front();
         int card2 = player2.front();
         player1.pop_front();
@@ -134,7 +134,7 @@ bool player1Wins(deque<int>& player1, deque<int>& player2)
             player2.push_back(card1);
         }
     }
-    return true;
+    return player1.size();
 }
 
 int main(int argc, char *argv[])
