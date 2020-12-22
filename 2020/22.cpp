@@ -1,15 +1,15 @@
 /*
-    Advent of Code Day 21
+    Advent of Code Day 22
 
     To run on a mac:
 
-        1. Update makefile "DAY" variable to 21
+        1. Update makefile "DAY" variable to 22
         2. Run "make"
         3. Run "./aoc"
 
     Problem:
 
-        https://adventofcode.com/2020/day/21
+        https://adventofcode.com/2020/day/22
 */
 
 #include <iostream>
