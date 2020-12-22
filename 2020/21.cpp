@@ -97,62 +97,60 @@ bool seen_before(deque<int>& player1, deque<int>& player2,
     return false;
 }
 
-bool player1Wins(deque<int>& player1, deque<int>& player2,
-    unordered_set<string>& seen)
+bool player1Wins(deque<int>& player1, deque<int>& player2)
 {
-    if (seen_before(player1, player2, seen)) return true;
-    if (player1.size() == 0) return false;
-    if (player2.size() == 0) return true;
+    unordered_set<string> seen;
 
-    cout << "p1: ";
-    for (auto num : player1) cout << num << " ";
-    cout << endl;
-    cout << "p2: ";
-    for (auto num : player2) cout << num << " ";
-    cout << endl;
-
-    int card1 = player1.front();
-    int card2 = player2.front();
-    player1.pop_front();
-    player2.pop_front();
-
-    if (card1 <= player1.size() && card2 <= player2.size())
+    while (!seen_before(player1, player2, seen))
     {
-        if (player1Wins(player1, player2, seen))
+        if (player1.size() == 0) return false;
+        if (player2.size() == 0) return true;
+        int card1 = player1.front();
+        int card2 = player2.front();
+        player1.pop_front();
+        player2.pop_front();
+
+        if (card1 <= player1.size() && card2 <= player2.size())
+        {
+            deque<int> p1(player1.begin(), player1.end());
+            deque<int> p2(player2.begin(), player2.end());
+            if (player1Wins(p1, p2))
+            {
+                player1.push_back(card1);
+                player1.push_back(card2);
+                continue;
+            }
+            player2.push_back(card2);
+            player2.push_back(card1);
+            continue;
+        }
+
+        if (card1 > card2)
         {
             player1.push_back(card1);
             player1.push_back(card2);
-            return true;
+            continue;
         }
         player2.push_back(card2);
         player2.push_back(card1);
-        return false;
     }
-
-    if (card1 > card2)
-    {
-        player1.push_back(card1);
-        player1.push_back(card2);
-        return true;
-    }
-    player2.push_back(card2);
-    player2.push_back(card1);
-    return false;
+    return true;
 }
 
 int main(int argc, char *argv[])
 {
     deque<int> player1;
     deque<int> player2;
-    unordered_set<string> seen;
     read_file(player1, player2);
 
     cout << "Part 1: " << part1(player1, player2) << endl; // 32824
-    cout << "Part 2: ";
+
     player1.clear();
-    player2.clear(); cout << endl;
+    player2.clear();
     read_file(player1, player2);
-    if (player1Wins(player1, player2, seen))
+
+    cout << "Part 2: ";
+    if (player1Wins(player1, player2))
         cout << get_score(player1) << endl;
     else
         cout << get_score(player2) << endl;
