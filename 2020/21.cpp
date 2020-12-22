@@ -112,8 +112,10 @@ bool player1Wins(deque<int>& player1, deque<int>& player2)
 
         if (card1 <= player1.size() && card2 <= player2.size())
         {
-            deque<int> p1(player1.begin(), player1.end());
-            deque<int> p2(player2.begin(), player2.end());
+            deque<int> p1(player1.begin(), player1.begin() + card1);
+            deque<int> p2(player2.begin(), player2.begin() + card2);
+            for (auto num : p1) cout << num << " ";
+            cout << endl;
             if (player1Wins(p1, p2))
             {
                 player1.push_back(card1);
