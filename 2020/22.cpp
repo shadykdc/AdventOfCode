@@ -15,27 +15,145 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
+#include <deque>
+#include <sstream>
+#include <unordered_set>
 
 using namespace std;
 
-#define INPUT_FILE "input21.txt"
+#define INPUT_FILE "input22.txt"
 
-void read_file()
+void read_file(deque<int>& player1, deque<int>& player2)
 {
+    ifstream ifs(INPUT_FILE);
+    int num;
+    string str;
+
+    if(ifs.good())
+    {
+        getline(ifs, str);
+        stringstream ss(str);
+        while (ss >> num)
+            player1.push_back(num);
+    }
+    if(ifs.good())
+    {
+        getline(ifs, str);
+        stringstream ss(str);
+        while (ss >> num)
+            player2.push_back(num);
+    }
+    ifs.close();
+
     return;
 }
 
-int part1()
+int get_score(deque<int>& player)
 {
-    return 1;
+    int sum = 0;
+    while(player.size())
+    {
+        sum += player.front() * player.size();
+        player.pop_front();
+    }
+    return sum;
+}
+
+int part1(deque<int>& player1, deque<int>& player2)
+{
+    while (player1.size() && player2.size())
+    {
+        int card1 = player1.front();
+        int card2 = player2.front();
+        player1.pop_front();
+        player2.pop_front();
+        if (card1 > card2)
+        {
+            player1.push_back(card1);
+            player1.push_back(card2);
+        }
+        else if (card2 > card1)
+        {
+            player2.push_back(card2);
+            player2.push_back(card1);
+        }
+    }
+
+    if (player1.size()) return get_score(player1);
+    return get_score(player2);
+}
+
+bool seen_before(deque<int>& player1, deque<int>& player2,
+    unordered_set<string>& seen)
+{
+    string str;
+    for (auto num : player1)
+        str += to_string(num);
+    for (auto num : player2)
+        str += to_string(num);
+    if (seen.find(str) != seen.end())
+        return true;
+    seen.insert(str);
+    return false;
+}
+
+bool player1Wins(deque<int>& player1, deque<int>& player2)
+{
+    unordered_set<string> seen;
+
+    while (!seen_before(player1, player2, seen))
+    {
+        if (player1.size() == 0) return false;
+        if (player2.size() == 0) return true;
+        int card1 = player1.front();
+        int card2 = player2.front();
+        player1.pop_front();
+        player2.pop_front();
+
+        if (card1 <= player1.size() && card2 <= player2.size())
+        {
+            deque<int> p1(player1.begin(), player1.begin() + card1);
+            deque<int> p2(player2.begin(), player2.begin() + card2);
+            if (player1Wins(p1, p2))
+            {
+                player1.push_back(card1);
+                player1.push_back(card2);
+                continue;
+            }
+            player2.push_back(card2);
+            player2.push_back(card1);
+        }
+        else if (card1 > card2)
+        {
+            player1.push_back(card1);
+            player1.push_back(card2);
+        }
+        else // card2 >= card1
+        {
+            player2.push_back(card2);
+            player2.push_back(card1);
+        }
+    }
+    return true;
 }
 
 int main(int argc, char *argv[])
 {
-    read_file();
+    deque<int> player1;
+    deque<int> player2;
+    read_file(player1, player2);
 
-    cout << "Part 1: " << part1() << endl;
+    cout << "Part 1: " << part1(player1, player2) << endl; // 32824
+
+    player1.clear();
+    player2.clear();
+    read_file(player1, player2);
+
+    cout << "Part 2: "; // 32784 is too low
+    if (player1Wins(player1, player2))
+        cout << get_score(player1) << endl;
+    else
+        cout << get_score(player2) << endl;
 
     return 0;
 }
