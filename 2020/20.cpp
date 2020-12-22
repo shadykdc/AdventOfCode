@@ -16,6 +16,7 @@
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <math.h>
 #include <queue>
 
@@ -28,7 +29,8 @@ class Tile
 public:
     int id;
     vector<string> pattern;
-    Tile(int _id = -1) { id = _id; }
+    vector<bool> compatible_edges;
+    Tile(int _id = -1) { id = _id; compatible_edges = {false, false, false, false}; }
 
     // print tile
     void print()
@@ -40,11 +42,11 @@ public:
     }
 
     // flip horizontally
-    void flip()
+    void flip_horiz()
     {
+        size_t size = pattern.size();
         for (int r = 0; r < pattern.size(); r++)
         {
-            size_t size = pattern[r].size();
             for (int i = 0; i < size/2; i++)
             {
                 int temp = pattern[r][i];
@@ -54,8 +56,23 @@ public:
         }
     }
 
+    // flip veritcally
+    void flip_vert()
+    {
+        size_t size = pattern.size();
+        for (int i = 0; i < size/2; i++)
+        {
+            for (int c = 0; c < size; c++)
+            {
+                int temp = pattern[i][c];
+                pattern[i][c] = pattern[size-1-i][c];
+                pattern[size-1-i][c] = temp;
+            }
+        }
+    }
+
     // rotate counter clock wise 90 degrees
-    void rotate()
+    void rotateCCW()
     {
         // Tiles seem to be 10 x 10 so assuming row count == col count
         int d = pattern.size()-1; // dimension
@@ -73,46 +90,48 @@ public:
 
     }
 
-    // returns count of edges that match
-    int count_edge_matches(Tile* t)
+    // rotate clock wise 90 degrees
+    void rotateCW()
     {
-        int count = 4;
-        int dim = pattern.size();
+        // Tiles seem to be 10 x 10 so assuming row count == col count
+        int d = pattern.size()-1; // dimension
+        for (int r = 0; r < pattern.size()/2; r++)
+        {
+            for (int c = r; c < d-r; c++)
+            {
+                int temp = pattern[r][c];
+                pattern[r][c] = pattern[d-c][r];
+                pattern[d-c][r] = pattern[d-r][d-c];
+                pattern[d-r][d-c] = pattern[c][d-r];
+                pattern[c][d-r]= temp;
+            }
+        }
+    }
 
+    // returns true if edge matches edge of Tile t
+    // edge = 0 --> tile t is to the right and matches
+    // edge = 1 --> tile t is below and matches
+    bool matches(Tile* t, int edge)
+    {
         // yay for perfect square tiles
-        for (int i = 0; i < dim; i++) // set Tile t to the right
+        int dim = pattern.size();
+        if (edge == 0)
         {
-            if (pattern[i][dim-1] != t->pattern[i][0])
+            for (int i = 0; i < dim; i++)
             {
-                count--;
-                break;
+                if (pattern[i][dim-1] != t->pattern[i][0])
+                    return false;
             }
         }
-        for (int i = 0; i < dim; i++) // set Tile t to the bottom
+        else if (edge == 1)
         {
-            if (pattern[dim-1][i] != t->pattern[0][i])
+            for (int i = 0; i < dim; i++)
             {
-                count--;
-                break;
+                if (pattern[dim-1][i] != t->pattern[0][i])
+                    return false;
             }
         }
-        for (int i = 0; i < dim; i++) // set Tile t to the left
-        {
-            if (pattern[0][i] != t->pattern[i][dim-1])
-            {
-                count--;
-                break;
-            }
-        }
-        for (int i = 0; i < dim; i++) // set Tile t to the top
-        {
-            if (pattern[0][i] != t->pattern[dim-1][i])
-            {
-                count--;
-                break;
-            }
-        }
-        return count;
+        return true;
     }
 };
 
@@ -146,7 +165,7 @@ void read_file(unordered_map<int, Tile>& tiles, vector<int>& ids)
     ifs.close();
     return;
 }
-/*
+
 bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
     int dim = sqrt(ids.size()); // 3
@@ -161,42 +180,44 @@ bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
     }
     return true;
 }
-*/
-int count_compatible_edges(unordered_map<int, Tile>& tiles, vector<int>& ids, int idx)
-{
-    int count = 0;
-    for (int i = 0; i < ids.size(); i++)
-    {
-        if (i == idx) continue;
-        count += tiles[ids[idx]].count_edge_matches(&tiles[ids[i]]);
-        tiles[ids[idx]].flip();
-        count += tiles[ids[idx]].count_edge_matches(&tiles[ids[i]]);
-        tiles[ids[idx]].flip(); // todo: remove?
-    }
-
-    return count;
-}
 
 long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    priority_queue <pair<int, int>> pq; // count, id
-
-    // basically, we're looking for the corner pieces of a puzzle
-    for (int i = 0; i < ids.size(); i++)
+    // for each tile, count how many of its edges match with other tiles
+    for (int i = 0; i < ids.size(); i++) // for each tile
     {
-        int count = count_compatible_edges(tiles, ids, i);
-        pq.push(make_pair(count, ids[i]));
-        if (pq.size() > 4) pq.pop();
+        for (int x1 = 0; x1 < 2; x1++)
+        {
+            for (int edge = 0; edge < 4; edge++) // for each edge
+            {
+                if (tiles[ids[i]].compatible_edges[edge]) continue;
+                for (int j = 0; j < ids.size(); j++) // pair with another tile
+                {
+                    if (i == j) continue;
+                    for (int x = 0; x < 2; x++)
+                    {
+                        for (int edge2 = 0; edge2 < 4; edge2++)
+                        {
+                            if (tiles[ids[i]].matches(&tiles[ids[j]], 0))
+                            {
+                                tiles[ids[i]].compatible_edges[edge] = true;
+                                tiles[ids[j]].compatible_edges[edge2] = true;
+                            }
+                            tiles[ids[j]].rotateCW();
+                        }
+                        tiles[ids[j]].rotateCW();
+                        tiles[ids[j]].rotateCW();
+                        tiles[ids[j]].flip_horiz();
+                    }
+                }
+                tiles[ids[i]].rotateCW();
+            }
+            tiles[ids[i]].rotateCW();
+            tiles[ids[i]].rotateCW();
+            tiles[ids[i]].flip_horiz();
+        }
     }
-
-    long long prod = 1;
-    while(pq.size())
-    {
-        cout << pq.top().second << endl;
-        prod *= pq.top().second;
-        pq.pop();
-    }
-    return prod;
+    return 1;
 }
 
 int main(int argc, char *argv[])
@@ -205,7 +226,14 @@ int main(int argc, char *argv[])
     vector<int> ids;
     read_file(tiles, ids);
 
-    cout << "Part 1: " << part1(tiles, ids) << endl;
+    cout << endl << "Part 1: " << part1(tiles, ids) << endl;
+    for (auto item : tiles)
+    {
+        int count = 0;
+        for (auto edge : item.second.compatible_edges)
+            if (edge) count++;
+        cout << item.second.id << " " << count << endl;
+    }
 
     return 0;
 }
