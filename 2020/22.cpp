@@ -86,9 +86,12 @@ int part1(deque<int>& player1, deque<int>& player2)
 bool seen_before(deque<int>& player1, deque<int>& player2,
     unordered_set<string>& seen)
 {
-    string str;
+    string str = "1";
     for (auto num : player1)
         str += to_string(num);
+    if (seen.find(str) != seen.end())
+        return true;
+    str = "2";
     for (auto num : player2)
         str += to_string(num);
     if (seen.find(str) != seen.end())
