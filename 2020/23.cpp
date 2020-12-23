@@ -28,7 +28,7 @@ public:
     int current_label;
     int min_cup_label;
     int max_cup_label;
-    CupGame(vector<int> _cups)
+    CupGame(vector<int> _cups, bool to_a_million)
     {
         cups = _cups;
         min_cup_label = INT_MAX;
@@ -39,6 +39,15 @@ public:
             max_cup_label = max(max_cup_label, cup);
         }
         current_idx = 0;
+        if (to_a_million)
+        {
+            int num = cups.size() + 1;
+            while(cups.size() != 1000000)
+            {
+                cups.push_back(num);
+                num++;
+            }
+        }
     };
     void Move()
     {
@@ -130,10 +139,31 @@ void part1(CupGame* cups, int moves)
     cout << endl;
 }
 
+void part2(CupGame* cups, int moves)
+{
+    for (int i = 0; i < moves; i++)
+    {
+        cups->Move();
+    }
+    // find 1
+    int idx_of_one = -1;
+    for (int i = 0; i < cups->cups.size(); i++)
+    {
+        if (cups->cups[i] == 1)
+            idx_of_one = i;
+    }
+    cout << cups->cups[ (idx_of_one + 1) % cups->cups.size() ] *
+            cups->cups[ (idx_of_one + 2) % cups->cups.size() ]
+         << endl;
+}
+
 int main(int argc, char *argv[])
 {
-    CupGame cups({9,4,2,3,8,7,6,1,5});
-    part1(&cups, 100); // 36542897
+    CupGame cups1({9,4,2,3,8,7,6,1,5}, false);
+    part1(&cups1, 100); // 36542897
+    CupGame cups2({9,4,2,3,8,7,6,1,5}, true);
+    part2(&cups2, 10000000); //
+    cout << endl;
 
     return 0;
 }
