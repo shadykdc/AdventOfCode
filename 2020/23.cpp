@@ -35,12 +35,6 @@ public:
         cups = _cups;
         min_cup_label = INT_MAX;
         max_cup_label = INT_MIN;
-        for (auto cup : cups)
-        {
-            min_cup_label = min(min_cup_label, cup);
-            max_cup_label = max(max_cup_label, cup);
-        }
-        current_cup = cups.begin();
         if (to_a_million)
         {
             int num = cups.size() + 1;
@@ -50,6 +44,12 @@ public:
                 num++;
             }
         }
+        for (auto cup : cups)
+        {
+            min_cup_label = min(min_cup_label, cup);
+            max_cup_label = max(max_cup_label, cup);
+        }
+        current_cup = cups.begin();
     };
     void Move()
     {
@@ -64,9 +64,6 @@ public:
             three_cups.push_back(*next_node);
             cups.erase(next_node);
         }
-        cout << "pick up ";
-        for (auto cup : three_cups) cout << cup << " ";
-        cout << endl;
         // step 2 - select a destination cup
         int dest_label = *current_cup - 1;
         auto got = find(cups.begin(), cups.end(), dest_label);
@@ -77,7 +74,6 @@ public:
                 dest_label = max_cup_label;
             got = find(cups.begin(), cups.end(), dest_label);
         }
-        cout << "destination: " << dest_label << endl;
         // step 3 - place cups immediately cw of dest_idx
         auto next_cup = (*got == cups.back()) ? cups.begin() : next(got);
         cups.insert(next_cup, three_cups.begin(), three_cups.end());
@@ -121,11 +117,11 @@ public:
 
 void part1(CupGame* cups, int moves)
 {
-    cups->Print();
+    // cups->Print();
     for (int i = 0; i < moves; i++)
     {
         cups->Move();
-        cups->Print();
+        // cups->Print();
     }
     cout << "Part 1: ";
     cups->PrintFrom1();
@@ -140,7 +136,7 @@ void part2(CupGame* cups, int moves)
     }
     // find 1
     auto one = find(cups->cups.begin(), cups->cups.end(), 1);
-    auto two =   (*one == cups->cups.back()) ? cups->cups.begin() : next(one);
+    auto two = (*one == cups->cups.back()) ? cups->cups.begin() : next(one);
     auto three = (*two == cups->cups.back()) ? cups->cups.begin() : next(two);
     cout << *two * *three << endl;
 }
@@ -151,7 +147,7 @@ int main(int argc, char *argv[])
     // CupGame cups1({3,8,9,1,2,5,4,6,7}, false);
     part1(&cups1, 100); // 36542897
     CupGame cups2({9,4,2,3,8,7,6,1,5}, true);
-    // part2(&cups2, 10000000); //
+    part2(&cups2, 10000000); //
     cout << endl;
 
     return 0;
