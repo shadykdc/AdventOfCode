@@ -92,7 +92,7 @@ public:
         list<long>::iterator dest = got->second;
         for (size_t i = 0; i < 3; i++)
         {
-            dest = (*dest == cups.back() ) ? cups.begin() : next(dest);
+            dest = (*dest == cups.back()) ? cups.begin() : next(dest);
             map[*dest] = dest;
         }
         // step 4 - get next cup
@@ -100,12 +100,15 @@ public:
                 ( *current_cup == cups.back() )
                 ? cups.begin()
                 : next(current_cup);
+        if (map.size() != 1000000) cout << "map size: " << map.size() << endl;
     };
     void PrintFrom1()
     {
         auto one = map.find(1);
         if (one == map.end()) cout << "couldn't find 1" << endl;
-        auto print_me = next(one->second);
+        auto print_me = (one->first == cups.back())
+            ? cups.begin()
+            : next(one->second);
         while (print_me != cups.end())
         {
             cout << *print_me;
