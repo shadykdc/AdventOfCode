@@ -51,8 +51,7 @@ public:
             while(cups.size() != 1000000)
             {
                 cups.push_back(num);
-                map[num] = cup;
-                cup = next(cup);
+                map[num] = prev(cups.end());
                 num++;
             }
         }
@@ -64,9 +63,11 @@ public:
     };
     void Move()
     {
+        // for (int i = 1; i < 5; i++) cout << " " << *(next(current_cup, i));
+        // cout << endl;
         // step 1 - get three cups
         vector<long> three_cups = {};
-        while (three_cups.size() < 3)
+        for (int i = 0; i < 3; i++)
         {
             list<long>::iterator next_node =
                 ( *current_cup == cups.back() )
@@ -87,20 +88,20 @@ public:
             got = map.find(dest_label);
         }
         // step 3 - place cups immediately cw of dest_idx
-        auto next_cup = (dest_label == cups.back()) ? cups.begin() : next(got->second);
+        auto dest_cup = got->second;
+        auto next_cup = next(dest_cup);
         cups.insert(next_cup, three_cups.begin(), three_cups.end());
-        list<long>::iterator dest = got->second;
+        map[*dest_cup] = dest_cup;
         for (size_t i = 0; i < 3; i++)
         {
-            dest = (*dest == cups.back()) ? cups.begin() : next(dest);
-            map[*dest] = dest;
+            dest_cup = (*dest_cup == cups.back()) ? cups.begin() : next(dest_cup);
+            map[*dest_cup] = dest_cup;
         }
         // step 4 - get next cup
         current_cup =
                 ( *current_cup == cups.back() )
                 ? cups.begin()
                 : next(current_cup);
-        if (map.size() != 1000000) cout << "map size: " << map.size() << endl;
     };
     void PrintFrom1()
     {
@@ -136,11 +137,11 @@ public:
 
 void part1(CupGame* cups, size_t moves)
 {
-    cups->Print();
+    // cups->Print();
     for (size_t i = 0; i < moves; i++)
     {
         cups->Move();
-        cups->Print();
+        // cups->Print();
     }
     cout << "Part 1: ";
     cups->PrintFrom1();
@@ -161,11 +162,11 @@ void part2(CupGame* cups, size_t moves)
 
 int main(int argc, char *argv[])
 {
-    CupGame cups1({9,4,2,3,8,7,6,1,5}, false); // my input
-    // CupGame cups1({3,8,9,1,2,5,4,6,7}, false); // example
+    // CupGame cups1({9,4,2,3,8,7,6,1,5}, false); // my input
+    CupGame cups1({3,8,9,1,2,5,4,6,7}, false); // example
     part1(&cups1, 100); // 36542897
     CupGame cups2({9,4,2,3,8,7,6,1,5}, true);
-    // part2(&cups2, 10000000); //
+    part2(&cups2, 1000000); //
     cout << endl;
 
     return 0;
