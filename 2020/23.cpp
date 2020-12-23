@@ -63,8 +63,6 @@ public:
     };
     void Move()
     {
-        // for (int i = 1; i < 5; i++) cout << " " << *(next(current_cup, i));
-        // cout << endl;
         // step 1 - get three cups
         vector<long> three_cups = {};
         for (int i = 0; i < 3; i++)
@@ -91,7 +89,6 @@ public:
         auto dest_cup = got->second;
         auto next_cup = next(dest_cup);
         cups.insert(next_cup, three_cups.begin(), three_cups.end());
-        map[*dest_cup] = dest_cup;
         for (size_t i = 0; i < 3; i++)
         {
             dest_cup = (*dest_cup == cups.back()) ? cups.begin() : next(dest_cup);
@@ -106,7 +103,7 @@ public:
     void PrintFrom1()
     {
         auto one = map.find(1);
-        if (one == map.end()) cout << "couldn't find 1" << endl;
+        if (one == map.end()) throw("couldn't find 1");
         auto print_me = (one->first == cups.back())
             ? cups.begin()
             : next(one->second);
@@ -145,7 +142,6 @@ void part1(CupGame* cups, size_t moves)
     }
     cout << "Part 1: ";
     cups->PrintFrom1();
-    cout << endl;
 }
 
 void part2(CupGame* cups, size_t moves)
@@ -154,20 +150,23 @@ void part2(CupGame* cups, size_t moves)
         cups->Move();
 
     auto one = cups->map.find(1);
-    if (one == cups->map.end()) cout << "couldn't find 1" << endl;
+    if (one == cups->map.end()) throw("couldn't find 1");
     auto two = (1 == cups->cups.back()) ? cups->cups.begin() : next(one->second);
     auto three = (*two == cups->cups.back()) ? cups->cups.begin() : next(two);
-    cout << *two * *three << endl;
+    cout << *(one->second) << " " << *two << " " << *three << endl;
+    cout << "Part 2: " << *two * *three << endl;
 }
 
 int main(int argc, char *argv[])
 {
-    // CupGame cups1({9,4,2,3,8,7,6,1,5}, false); // my input
-    CupGame cups1({3,8,9,1,2,5,4,6,7}, false); // example
+    // my input
+    // CupGame cups1({9,4,2,3,8,7,6,1,5}, false);
+    // example, p1: 67384529, p2: 149245887792
+    CupGame cups1({3,8,9,1,2,5,4,6,7}, false);
     part1(&cups1, 100); // 36542897
+
     CupGame cups2({9,4,2,3,8,7,6,1,5}, true);
-    part2(&cups2, 1000000); //
-    cout << endl;
+    part2(&cups2, 20); //
 
     return 0;
 }
