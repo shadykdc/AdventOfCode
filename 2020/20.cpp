@@ -29,10 +29,16 @@ enum Edge {Right, Down, Left, Up};
 class Tile
 {
 public:
-    int id;
+    size_t id;
     vector<string> pattern;
     vector<bool> compatible_edges;
-    Tile(int _id = -1) { id = _id; compatible_edges = {false, false, false, false}; }
+    size_t compatible_edge_count;
+    Tile(size_t _id = -1)
+    {
+        id = _id;
+        compatible_edges = {false, false, false, false};
+        compatible_edge_count = 0;
+    }
 
     // print tile
     void print()
@@ -206,34 +212,45 @@ long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
     // for each tile, count how many of its edges match with other tiles edges
     for (size_t i = 0; i < ids.size(); i++) // for each tile
     {
-        for (size_t x1 = 0; x1 < 2; x1++) // for each face
+        for (size_t edge1 = 0; edge1 < 4; edge1++) // for each edge
         {
-            for (size_t edge1 = 0; edge1 < 4; edge1++) // for each edge
+            for (size_t j = i + 1; j < ids.size(); j++) // pair with another tile
             {
-                for (size_t j = i + 1; j < ids.size(); j++) // pair with another tile
+                for (size_t x2 = 0; x2 < 2; x2++) // for each other face
                 {
-                    for (size_t x2 = 0; x2 < 2; x2++) // for each other face
+                    for (size_t edge2 = 2; edge2 < 6; edge2++) // for each other edge
                     {
-                        for (size_t edge2 = 2; edge2 < 6; edge2++) // for each other edge
+                        if (tiles[ids[i]].matches(&tiles[ids[j]], Edge::Right))
                         {
-                            if (tiles[ids[i]].matches(&tiles[ids[j]], Edge::Right))
+                            if (!tiles[ids[i]].compatible_edges[edge1])
                             {
                                 tiles[ids[i]].compatible_edges[edge1] = true;
-                                tiles[ids[j]].compatible_edges[edge2%4] = true;
+                                tiles[ids[i]].compatible_edge_count++;
                             }
-                            if (x2) tiles[ids[j]].rotateCW();
-                            else tiles[ids[j]].rotateCCW();
+                            if (!tiles[ids[j]].compatible_edges[edge2%4])
+                            {
+                                tiles[ids[j]].compatible_edges[edge2%4] = true;
+                                tiles[ids[j]].compatible_edge_count++;
+                            }
                         }
-                        tiles[ids[j]].flip_vert();
+                        if (x2) tiles[ids[j]].rotateCW();
+                        else tiles[ids[j]].rotateCCW();
                     }
+                    tiles[ids[j]].flip_vert();
                 }
-                if (x1) tiles[ids[i]].rotateCW();
-                else tiles[ids[i]].rotateCCW();
             }
-            tiles[ids[i]].flip_vert();
+            tiles[ids[i]].rotateCCW();
         }
+        tiles[ids[i]].flip_vert();
     }
-    return 1;
+
+    long long prod = 1;
+    for (auto tile : tiles)
+    {
+        if (tile.second.compatible_edge_count == 2)
+            prod *= tile.second.id;
+    }
+    return prod;
 }
 
 int main(int argc, char *argv[])
@@ -242,14 +259,7 @@ int main(int argc, char *argv[])
     vector<int> ids;
     read_file(tiles, ids);
 
-    cout << endl << "Part 1: " << part1(tiles, ids) << endl;
-    for (auto item : tiles)
-    {
-        int count = 0;
-        for (auto edge : item.second.compatible_edges)
-            if (edge) count++;
-        cout << item.second.id << " " << count << endl;
-    }
+    cout << endl << "Part 1: " << part1(tiles, ids) << endl; // 108603771107737
 
     return 0;
 }
