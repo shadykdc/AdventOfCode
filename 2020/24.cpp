@@ -16,7 +16,6 @@
 #include <fstream>
 #include <vector>
 #include <unordered_set>
-#include <math.h>
 
 using namespace std;
 
