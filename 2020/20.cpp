@@ -22,6 +22,8 @@
 
 using namespace std;
 
+enum Edge {Right, Down, Left, Up};
+
 #define INPUT_FILE "input20.txt"
 
 class Tile
@@ -109,13 +111,15 @@ public:
     }
 
     // returns true if edge matches edge of Tile t
-    // edge = 0 --> tile t is to the right and matches
-    // edge = 1 --> tile t is below and matches
-    bool matches(Tile* t, int edge)
+    // edge = Right --> tile t is to the right and matches
+    // edge = Down --> tile t is below and matches
+    // edge = Left --> tile t is to the left and matches
+    // edge = Up --> tile t is above and matches
+    bool matches(Tile* t, Edge edge)
     {
         // yay for perfect square tiles
         int dim = pattern.size();
-        if (edge == 0)
+        if (edge == Edge::Right)
         {
             for (int i = 0; i < dim; i++)
             {
@@ -123,11 +127,27 @@ public:
                     return false;
             }
         }
-        else if (edge == 1)
+        else if (edge == Edge::Down)
         {
             for (int i = 0; i < dim; i++)
             {
                 if (pattern[dim-1][i] != t->pattern[0][i])
+                    return false;
+            }
+        }
+        else if (edge == Edge::Left)
+        {
+            for (int i = 0; i < dim; i++)
+            {
+                if (pattern[i][0] != t->pattern[i][dim-1])
+                    return false;
+            }
+        }
+        else if (edge == Edge::Up)
+        {
+            for (int i = 0; i < dim; i++)
+            {
+                if (pattern[0][i] != t->pattern[dim-1][i])
                     return false;
             }
         }
@@ -172,10 +192,10 @@ bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
     for (int i = 0; i < ids.size(); i++)
     {
         if ((i+1)%dim != 0 && i+1 < ids.size() && // room to right
-           !tiles[ids[i]].matches(&tiles[ids[i+1]], 0)) // right matches
+           !tiles[ids[i]].matches(&tiles[ids[i+1]], Edge::Right)) // right matches
             return false;
         if (i+dim < ids.size() && // room below
-           !tiles[ids[i]].matches(&tiles[ids[i+dim]], 1)) // down matches
+           !tiles[ids[i]].matches(&tiles[ids[i+dim]], Edge::Down)) // down matches
             return false;
     }
     return true;
@@ -183,38 +203,34 @@ bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
 
 long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    // for each tile, count how many of its edges match with other tiles
-    for (int i = 0; i < ids.size(); i++) // for each tile
+    // for each tile, count how many of its edges match with other tiles edges
+    for (size_t i = 0; i < ids.size(); i++) // for each tile
     {
-        for (int x1 = 0; x1 < 2; x1++)
+        for (size_t x1 = 0; x1 < 2; x1++) // for each face
         {
-            for (int edge = 0; edge < 4; edge++) // for each edge
+            for (size_t edge1 = 0; edge1 < 4; edge1++) // for each edge
             {
-                if (tiles[ids[i]].compatible_edges[edge]) continue;
-                for (int j = 0; j < ids.size(); j++) // pair with another tile
+                for (size_t j = i + 1; j < ids.size(); j++) // pair with another tile
                 {
-                    if (i == j) continue;
-                    for (int x = 0; x < 2; x++)
+                    for (size_t x2 = 0; x2 < 2; x2++) // for each other face
                     {
-                        for (int edge2 = 0; edge2 < 4; edge2++)
+                        for (size_t edge2 = 2; edge2 < 6; edge2++) // for each other edge
                         {
-                            if (tiles[ids[i]].matches(&tiles[ids[j]], 0))
+                            if (tiles[ids[i]].matches(&tiles[ids[j]], Edge::Right))
                             {
-                                tiles[ids[i]].compatible_edges[edge] = true;
-                                tiles[ids[j]].compatible_edges[edge2] = true;
+                                tiles[ids[i]].compatible_edges[edge1] = true;
+                                tiles[ids[j]].compatible_edges[edge2%4] = true;
                             }
-                            tiles[ids[j]].rotateCW();
+                            if (x2) tiles[ids[j]].rotateCW();
+                            else tiles[ids[j]].rotateCCW();
                         }
-                        tiles[ids[j]].rotateCW();
-                        tiles[ids[j]].rotateCW();
-                        tiles[ids[j]].flip_horiz();
+                        tiles[ids[j]].flip_vert();
                     }
                 }
-                tiles[ids[i]].rotateCW();
+                if (x1) tiles[ids[i]].rotateCW();
+                else tiles[ids[i]].rotateCCW();
             }
-            tiles[ids[i]].rotateCW();
-            tiles[ids[i]].rotateCW();
-            tiles[ids[i]].flip_horiz();
+            tiles[ids[i]].flip_vert();
         }
     }
     return 1;
