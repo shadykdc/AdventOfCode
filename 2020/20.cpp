@@ -22,8 +22,6 @@
 
 using namespace std;
 
-enum Edge {Right, Down, Left, Up};
-
 #define INPUT_FILE "input20.txt"
 
 class Tile
@@ -31,14 +29,10 @@ class Tile
 public:
     size_t id;
     vector<string> pattern;
-    vector<bool> compatible_edges;
-    size_t compatible_edge_count;
-    Tile(size_t _id = -1)
-    {
-        id = _id;
-        compatible_edges = {false, false, false, false};
-        compatible_edge_count = 0;
-    }
+    // map edge to list of tile ids it matches
+    unordered_map<size_t, unordered_set<size_t>> compatible_edges;
+
+    Tile(size_t _id = -1) { id = _id; }
 
     // print tile
     void print()
@@ -117,15 +111,15 @@ public:
     }
 
     // returns true if edge matches edge of Tile t
-    // edge = Right --> tile t is to the right and matches
-    // edge = Down --> tile t is below and matches
-    // edge = Left --> tile t is to the left and matches
-    // edge = Up --> tile t is above and matches
-    bool matches(Tile* t, Edge edge)
+    // edge = 0 --> tile t is to the right and matches
+    // edge = 1 --> tile t is below and matches
+    // edge = 2 --> tile t is to the left and matches
+    // edge = 3 --> tile t is above and matches
+    bool matches(Tile* t, size_t edge)
     {
         // yay for perfect square tiles
         int dim = pattern.size();
-        if (edge == Edge::Right)
+        if (edge == 0)
         {
             for (int i = 0; i < dim; i++)
             {
@@ -133,7 +127,7 @@ public:
                     return false;
             }
         }
-        else if (edge == Edge::Down)
+        else if (edge == 1)
         {
             for (int i = 0; i < dim; i++)
             {
@@ -141,7 +135,7 @@ public:
                     return false;
             }
         }
-        else if (edge == Edge::Left)
+        else if (edge == 2)
         {
             for (int i = 0; i < dim; i++)
             {
@@ -149,7 +143,7 @@ public:
                     return false;
             }
         }
-        else if (edge == Edge::Up)
+        else if (edge == 3)
         {
             for (int i = 0; i < dim; i++)
             {
@@ -192,24 +186,10 @@ void read_file(unordered_map<int, Tile>& tiles, vector<int>& ids)
     return;
 }
 
-bool success(unordered_map<int, Tile>& tiles, vector<int>& ids)
+// for each tile, count how many of its edges match with other tiles edges
+// no need to check both faces for both tiles (just makes duplicates)
+void count_compatible_edges(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    int dim = sqrt(ids.size()); // 3
-    for (int i = 0; i < ids.size(); i++)
-    {
-        if ((i+1)%dim != 0 && i+1 < ids.size() && // room to right
-           !tiles[ids[i]].matches(&tiles[ids[i+1]], Edge::Right)) // right matches
-            return false;
-        if (i+dim < ids.size() && // room below
-           !tiles[ids[i]].matches(&tiles[ids[i+dim]], Edge::Down)) // down matches
-            return false;
-    }
-    return true;
-}
-
-long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
-{
-    // for each tile, count how many of its edges match with other tiles edges
     for (size_t i = 0; i < ids.size(); i++) // for each tile
     {
         for (size_t edge1 = 0; edge1 < 4; edge1++) // for each edge
@@ -220,18 +200,17 @@ long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
                 {
                     for (size_t edge2 = 2; edge2 < 6; edge2++) // for each other edge
                     {
-                        if (tiles[ids[i]].matches(&tiles[ids[j]], Edge::Right))
+                        if (tiles[ids[i]].matches(&tiles[ids[j]], 0))
                         {
-                            if (!tiles[ids[i]].compatible_edges[edge1])
-                            {
-                                tiles[ids[i]].compatible_edges[edge1] = true;
-                                tiles[ids[i]].compatible_edge_count++;
-                            }
-                            if (!tiles[ids[j]].compatible_edges[edge2%4])
-                            {
-                                tiles[ids[j]].compatible_edges[edge2%4] = true;
-                                tiles[ids[j]].compatible_edge_count++;
-                            }
+                            auto* c1 = &tiles[ids[i]].compatible_edges;
+                            auto* c2 = &tiles[ids[j]].compatible_edges;
+                            unordered_set<size_t> temp_set;
+                            if (c1->find(edge1) == c1->end())
+                                c1->insert(make_pair(edge1, temp_set));
+                            (*c1)[edge1].insert(ids[j]);
+                            if (c2->find(edge2%4) == c2->end())
+                                c2->insert(make_pair(edge2%4, temp_set));
+                            (*c2)[edge2%4].insert(ids[i]);
                         }
                         if (x2) tiles[ids[j]].rotateCW();
                         else tiles[ids[j]].rotateCCW();
@@ -243,14 +222,31 @@ long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
         }
         tiles[ids[i]].flip_vert();
     }
+}
+
+long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
+{
+    count_compatible_edges(tiles, ids);
 
     long long prod = 1;
     for (auto tile : tiles)
     {
-        if (tile.second.compatible_edge_count == 2)
+        cout << tile.second.id << ": " << tile.second.compatible_edges.size() << endl;
+        if (tile.second.compatible_edges.size() == 2)
             prod *= tile.second.id;
     }
     return prod;
+}
+
+void get_solution(unordered_map<int, Tile>& tiles, vector<int>& ids)
+{
+    return;
+}
+
+size_t part2(unordered_map<int, Tile>& tiles, vector<int>& ids)
+{
+    get_solution(tiles, ids);
+    return 1;
 }
 
 int main(int argc, char *argv[])
@@ -259,7 +255,8 @@ int main(int argc, char *argv[])
     vector<int> ids;
     read_file(tiles, ids);
 
-    cout << endl << "Part 1: " << part1(tiles, ids) << endl; // 108603771107737
+    cout << "Part 1: " << part1(tiles, ids) << endl; // 108603771107737
+    cout << "Part 2: " << part2(tiles, ids) << endl; //
 
     return 0;
 }
