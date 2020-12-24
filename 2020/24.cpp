@@ -158,21 +158,21 @@ void flip_tiles(
     unordered_set<pair<float, float>, pair_hash> next_black_tiles;
     unordered_set<pair<float, float>, pair_hash> next_white_tiles;
 
-    for (auto coord : black_tiles)
+    for (auto b_coord : black_tiles)
     {
-        size_t neighbors = count_b_neighbors(coord, black_tiles);
+        size_t neighbors = count_b_neighbors(b_coord, black_tiles);
         if (neighbors == 0 || neighbors > 2)
-            next_white_tiles.insert(coord);
+            next_white_tiles.insert(b_coord);
         else
-            next_black_tiles.insert(coord);
+            next_black_tiles.insert(b_coord);
     }
-    for (auto coord : white_tiles)
+    for (auto w_coord : white_tiles)
     {
-        size_t neighbors = count_b_neighbors(coord, white_tiles);
+        size_t neighbors = count_b_neighbors(w_coord, black_tiles);
         if (neighbors == 2)
-            next_black_tiles.insert(coord);
+            next_black_tiles.insert(w_coord);
         else
-            next_white_tiles.insert(coord);
+            next_white_tiles.insert(w_coord);
     }
     black_tiles = next_black_tiles;
     white_tiles = next_white_tiles;
