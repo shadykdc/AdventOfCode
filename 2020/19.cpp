@@ -29,12 +29,14 @@ class MapItem
 private:
 public:
     vector<vector<int>> combs;
+    vector<strings> strs;
+    size_t id;
     char ch;
-    MapItem() { ch = '\0'; }
-    MapItem(char _ch) { ch = _ch; }
+    MapItem(int _id) { ch = '\0'; id = _id;}
+    MapItem(char _ch, int _id) { ch = _ch; id = _id}
 };
 
-void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
+void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
 {
     FILE* pfile = fopen(INPUT_FILE_1, "r");
     if (pfile == NULL)
@@ -42,10 +44,6 @@ void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
         cerr << "Invalid file" << endl;
         exit(1);
     }
-
-    // I got lazy
-    map[24] = MapItem('b');
-    map[36] = MapItem('a');
 
     ifstream ifs1(INPUT_FILE_1, ifstream::in);
     string str;
@@ -60,7 +58,7 @@ void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
         {
             if (ss.peek() == ':')
                 ss.ignore();
-            map[idx] = MapItem('\0');
+            map[idx] = MapItem('\0', idx);
             vector<int> comb;
             while (ss >> num)
             {
@@ -88,22 +86,18 @@ void read_file(unordered_set<string>& strs, unordered_map<int, MapItem>& map)
     return;
 }
 
-void get_matches(unordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx,
-vector<string>& matches, string comb)
+void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
 {
-
     return;
 }
 
-// return the number of messages that completely match rule 0
-int part1(unordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx)
+// return the number of messages that completely match rule idx
+int part1(unordered_set<string>& strs, unordered_map<int, MapItem>& map, size_t idx)
 {
-    vector<string> matches;
-
-    get_matches(strs, map, idx, matches, "");
+    populate_map_strs(map, idx);
 
     int count = 0;
-    for (auto str : matches)
+    for (auto str : map[idx].strs)
     {
         if (strs.find(str) != strs.end())
             count ++;
@@ -114,7 +108,12 @@ int part1(unordered_set<string>& strs, unordered_map<int, MapItem>& map, int idx
 int main(int argc, char *argv[])
 {
     unordered_set<string> strs;
-    unordered_map<int, MapItem> map;
+    unordered_map<size_t, MapItem> map;
+
+    // I got lazy
+    map[24] = MapItem('b', 24);
+    map[36] = MapItem('a', 36);
+
     read_file(strs, map);
 
     cout << "Part 1: " << part1(strs, map, 0) << endl;
