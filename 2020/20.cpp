@@ -238,14 +238,10 @@ long long part1(unordered_map<int, Tile>& tiles, vector<int>& ids)
     return prod;
 }
 
-void get_solution(unordered_map<int, Tile>& tiles, vector<int>& ids)
-{
-    return;
-}
-
 size_t part2(unordered_map<int, Tile>& tiles, vector<int>& ids)
 {
-    get_solution(tiles, ids);
+    size_t dim = sqrt(tiles.size());
+    vector<vector<size_t>> solution(dim, vector<size_t>(dim));
     return 1;
 }
 
