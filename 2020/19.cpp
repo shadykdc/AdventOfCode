@@ -98,9 +98,9 @@ void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
         return;
     }
 
-    for (auto nums : map[idx].combs)
+    for (auto nums : map[idx].combs) // 4 4, 5 5
     {
-        for (size_t i = 0; i < nums.size(); i++)
+        for (size_t i = 0; i < nums.size(); i++) // 5, 5
         {
             size_t num = nums[i];
             if (!map[num].strs.size())
@@ -110,8 +110,10 @@ void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
                 if (i == 0)
                     map[idx].strs.push_back(str2);
                 else
-                    for (size_t i = 0; i < map[idx].strs.size(); i++)
-                        map[idx].strs[i] += str2;
+                    map[idx].strs[map[idx].strs.size()-1] += str2;
+                cout << idx << " ";
+                for (auto s : map[idx].strs) cout << s << " ";
+                cout << endl;
             }
         }
     }
