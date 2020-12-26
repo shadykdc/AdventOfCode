@@ -28,12 +28,13 @@ class MapItem
 {
 private:
 public:
-    vector<vector<int>> combs;
-    vector<strings> strs;
+    vector<vector<size_t>> combs;
+    vector<string> strs;
     size_t id;
     char ch;
-    MapItem(int _id) { ch = '\0'; id = _id;}
-    MapItem(char _ch, int _id) { ch = _ch; id = _id}
+    MapItem() { ch = '\0'; id = 0; }
+    MapItem(size_t _id) { ch = '\0'; id = _id; }
+    MapItem(char _ch, size_t _id) { ch = _ch; id = _id; }
 };
 
 void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
@@ -53,13 +54,13 @@ void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
         getline(ifs1, str);
         std::stringstream ss(str);
         if (str.size() == 0) break;
-        int idx, num;
+        size_t idx, num;
         if (ss >> idx)
         {
             if (ss.peek() == ':')
                 ss.ignore();
             map[idx] = MapItem('\0', idx);
-            vector<int> comb;
+            vector<size_t> comb;
             while (ss >> num)
             {
                 comb.push_back(num);
@@ -88,15 +89,54 @@ void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
 
 void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
 {
+    if (map[idx].ch != '\0')
+    {
+        map[idx].strs.push_back(to_string(map[idx].ch));
+        return;
+    }
+
+    for (auto nums : map[idx].combs) // 1 3, 3 1
+    {
+        for (auto num : nums) // 3, 1
+        {
+            bool new_str = true;;
+            size_t size1 = map[idx].strs.size();
+            size_t size2 = map[num].strs.size();
+            if (!size2)
+                populate_map_strs(map, num);
+            for (auto str2 : map[num].strs) // "b"
+            {
+                if (!new_str)
+                {
+                    for (size_t i = 0; i < size1; i++) // not sure
+                    {
+                        map[idx].strs[i] += str2;
+                    }
+                }
+                else
+                {
+                    map[idx].strs.push_back(str2);
+                    new_str = false;
+                }
+            }
+        }
+    }
     return;
 }
 
 // return the number of messages that completely match rule idx
-int part1(unordered_set<string>& strs, unordered_map<int, MapItem>& map, size_t idx)
+size_t part1(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map, size_t idx)
 {
     populate_map_strs(map, idx);
+    for (auto item : map)
+    {
+        cout << item.first << " " << endl;
+        for (auto str : item.second.strs)
+            cout << str << " ";
+        cout << endl;
+    }
 
-    int count = 0;
+    size_t count = 0;
     for (auto str : map[idx].strs)
     {
         if (strs.find(str) != strs.end())
