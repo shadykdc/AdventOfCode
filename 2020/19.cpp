@@ -31,10 +31,10 @@ public:
     vector<vector<size_t>> combs;
     vector<string> strs;
     size_t id;
-    char ch;
-    MapItem() { ch = '\0'; id = 0; }
-    MapItem(size_t _id) { ch = '\0'; id = _id; }
-    MapItem(char _ch, size_t _id) { ch = _ch; id = _id; }
+    string ch;
+    MapItem() { ch = ""; id = 0; }
+    MapItem(size_t _id) { ch = ""; id = _id; }
+    MapItem(string _ch, size_t _id) { ch = _ch; id = _id; }
 };
 
 void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
@@ -59,11 +59,13 @@ void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
         {
             if (ss.peek() == ':')
                 ss.ignore();
-            map[idx] = MapItem('\0', idx);
+            map[idx] = MapItem("", idx);
             vector<size_t> comb;
             while (ss >> num)
             {
                 comb.push_back(num);
+                if (ss.peek() == ' ')
+                    ss.ignore();
                 if (ss.peek() == '|')
                 {
                     map[idx].combs.push_back(comb);
@@ -71,7 +73,8 @@ void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
                     ss.ignore();
                 }
             }
-            map[idx].combs.push_back(comb);
+            if (comb.size())
+                map[idx].combs.push_back(comb);
         }
     }
 
@@ -89,35 +92,26 @@ void read_file(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map)
 
 void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
 {
-    if (map[idx].ch != '\0')
+    if (map[idx].ch != "")
     {
-        map[idx].strs.push_back(to_string(map[idx].ch));
+        map[idx].strs.push_back(map[idx].ch);
         return;
     }
 
-    for (auto nums : map[idx].combs) // 1 3, 3 1
+    for (auto nums : map[idx].combs)
     {
-        for (auto num : nums) // 3, 1
+        for (size_t i = 0; i < nums.size(); i++)
         {
-            bool new_str = true;;
-            size_t size1 = map[idx].strs.size();
-            size_t size2 = map[num].strs.size();
-            if (!size2)
+            size_t num = nums[i];
+            if (!map[num].strs.size())
                 populate_map_strs(map, num);
-            for (auto str2 : map[num].strs) // "b"
+            for (auto str2 : map[num].strs)
             {
-                if (!new_str)
-                {
-                    for (size_t i = 0; i < size1; i++) // not sure
-                    {
-                        map[idx].strs[i] += str2;
-                    }
-                }
-                else
-                {
+                if (i == 0)
                     map[idx].strs.push_back(str2);
-                    new_str = false;
-                }
+                else
+                    for (size_t i = 0; i < map[idx].strs.size(); i++)
+                        map[idx].strs[i] += str2;
             }
         }
     }
@@ -128,9 +122,10 @@ void populate_map_strs(unordered_map<size_t, MapItem>& map, size_t idx)
 size_t part1(unordered_set<string>& strs, unordered_map<size_t, MapItem>& map, size_t idx)
 {
     populate_map_strs(map, idx);
+    cout << endl;
     for (auto item : map)
     {
-        cout << item.first << " " << endl;
+        cout << item.second.id << ": ";
         for (auto str : item.second.strs)
             cout << str << " ";
         cout << endl;
@@ -151,8 +146,8 @@ int main(int argc, char *argv[])
     unordered_map<size_t, MapItem> map;
 
     // I got lazy
-    map[24] = MapItem('b', 24);
-    map[36] = MapItem('a', 36);
+    map[4] = MapItem("a", 4);
+    map[5] = MapItem("b", 5);
 
     read_file(strs, map);
 
