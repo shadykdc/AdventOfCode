@@ -91,34 +91,20 @@ def part_two(num: int) -> int:
         if graph[(x, y)] > num:
             return graph[(x, y)]
 
-        while x < edge:
-            x += 1
+        while abs(x) < abs(edge) or -x == edge:
+            x = x + 1 if edge > 0 else x - 1
             graph[(x, y)] = sum_neighbors(x, y, graph)
             if graph[(x, y)] > num:
                 return graph[(x, y)]
 
-        while y < edge:
-            y += 1
-            graph[(x, y)] = sum_neighbors(x, y, graph)
-            if graph[(x, y)] > num:
-                return graph[(x, y)]
-
-        edge *= -1
-
-        while x > edge:
-            x -= 1
-            graph[(x, y)] = sum_neighbors(x, y, graph)
-            if graph[(x, y)] > num:
-                return graph[(x, y)]
-
-        while y > edge:
-            y -= 1
+        while abs(y) < abs(edge) or -y == edge:
+            y = y + 1 if edge > 0 else y - 1
             graph[(x, y)] = sum_neighbors(x, y, graph)
             if graph[(x, y)] > num:
                 return graph[(x, y)]
 
         edge *= -1
-        edge += 1
+        edge += 1 if edge > 0 else 0
 
     return graph[(x, y)]
 
