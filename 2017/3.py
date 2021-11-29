@@ -87,18 +87,15 @@ def part_two(num: int) -> int:
     x, y = 0, 0
     graph[(x, y)] = 1
 
-    while True:
-        if graph[(x, y)] > num:
-            return graph[(x, y)]
-
+    while graph[(x, y)] < num:
         while abs(x) < abs(edge) or -x == edge:
-            x = x + 1 if edge > 0 else x - 1
+            x += 1 if edge > 0 else -1
             graph[(x, y)] = sum_neighbors(x, y, graph)
             if graph[(x, y)] > num:
                 return graph[(x, y)]
 
         while abs(y) < abs(edge) or -y == edge:
-            y = y + 1 if edge > 0 else y - 1
+            y += 1 if edge > 0 else -1
             graph[(x, y)] = sum_neighbors(x, y, graph)
             if graph[(x, y)] > num:
                 return graph[(x, y)]
@@ -108,5 +105,7 @@ def part_two(num: int) -> int:
 
     return graph[(x, y)]
 
+assert(part_two(0) == 1)
+assert(part_two(331) == 351)
 assert(part_two(747) == 806)
 print(f"Part 2: {part_two(num)}")
