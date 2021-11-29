@@ -85,7 +85,7 @@ def part_two(num: int) -> int:
     x, y, edge = 0, 0, 1
     graph: Dict[Tuple[int, int], int] = {(x, y): 1}
 
-    while graph[(x, y)] < num:
+    while graph[(x, y)] <= num:
         while abs(x) < abs(edge) or -x == edge:
             x += 1 if edge > 0 else -1
             graph[(x, y)] = sum_neighbors(x, y, graph)
@@ -104,7 +104,10 @@ def part_two(num: int) -> int:
     return graph[(x, y)]
 
 assert(part_two(0) == 1)
-assert(part_two(1) == 54)
+assert(part_two(1) == 2)
+assert(part_two(54) == 57)
+assert(part_two(59) == 122)
 assert(part_two(331) == 351)
 assert(part_two(747) == 806)
+assert(part_two(265149) == 266330)
 print(f"Part 2: {part_two(num)}")
