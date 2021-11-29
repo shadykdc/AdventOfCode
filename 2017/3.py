@@ -82,10 +82,9 @@ def sum_neighbors(x: int, y: int, graph: Dict[Tuple[int, int], int]) -> int:
     return total
 
 def part_two(num: int) -> int:
-    graph: Dict[Tuple[int, int], int] = {}
     edge = 1
     x, y = 0, 0
-    graph[(x, y)] = 1
+    graph: Dict[Tuple[int, int], int] = {(x, y): 1}
 
     while graph[(x, y)] < num:
         while abs(x) < abs(edge) or -x == edge:
