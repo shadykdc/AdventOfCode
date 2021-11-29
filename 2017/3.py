@@ -82,8 +82,7 @@ def sum_neighbors(x: int, y: int, graph: Dict[Tuple[int, int], int]) -> int:
     return total
 
 def part_two(num: int) -> int:
-    edge = 1
-    x, y = 0, 0
+    x, y, edge = 0, 0, 1
     graph: Dict[Tuple[int, int], int] = {(x, y): 1}
 
     while graph[(x, y)] < num:
@@ -105,6 +104,7 @@ def part_two(num: int) -> int:
     return graph[(x, y)]
 
 assert(part_two(0) == 1)
+assert(part_two(1) == 54)
 assert(part_two(331) == 351)
 assert(part_two(747) == 806)
 print(f"Part 2: {part_two(num)}")
