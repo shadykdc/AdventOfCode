@@ -10,9 +10,11 @@ def part_one(nums: List[int]) -> int:
 
 assert(part_one(example) == 7)
 print(f"Part One: {part_one(nums)}")
+assert(part_one(nums) == 1266)
 
 def part_two(nums: List[int]) -> int:
     return len([idx for idx in range(3, len(nums)) if nums[idx] > nums[idx-3]])
 
 assert(part_two(example) == 5)
 print(f"Part Two: {part_two(nums)}")
+assert(part_two(nums) == 1217)
