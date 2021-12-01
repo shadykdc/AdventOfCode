@@ -22,10 +22,10 @@ SIDES = 3
 
 def part_two(rows):
     count = 0
-    for r in [r*3 for r in range(int(len(rows)/SIDES))]:
-        for c in range(len(rows[0])):
-            sides = [rows[r+s][c] for s in range(SIDES)]
-            if sum(sides) - max(sides) * 2 > 0:
+    for row in [r*3 for r in range(int(len(rows)/SIDES))]:
+        for col in range(len(rows[0])):
+            nums = [rows[row+idx][col] for idx in range(SIDES)]
+            if sum(nums) - max(nums) * 2 > 0:
                 count += 1
     return count
 
