@@ -18,13 +18,13 @@ example2 = [
     [202, 402, 602],
     [203, 403, 603],
 ]
+SIDES = 3
 
 def part_two(rows):
     count = 0
-    for r in range(int(len(rows)/3)):
-        r *= 3
-        for c in range(3):
-            sides = [rows[r][c], rows[r+1][c], rows[r+2][c]]
+    for r in [r*3 for r in range(int(len(rows)/SIDES))]:
+        for c in range(len(rows[0])):
+            sides = [rows[r+s][c] for s in range(SIDES)]
             if sum(sides) - max(sides) * 2 > 0:
                 count += 1
     return count
