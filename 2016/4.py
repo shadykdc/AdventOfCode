@@ -17,16 +17,11 @@ class Room:
         return f"Name: {self.name} | ID: {self.id} | Checksum: {self.checksum}"
 
     def is_valid(self) -> bool:
-        counts = {}
-        for letter in self.name:
-            if letter in counts:
-                counts[letter] += 1
-            elif letter.isalpha():
-                counts[letter] = 1
+        counts = {c: self.name.count(c) for c in set(self.name) if c != " "}
         for letter in self.checksum:
             if letter not in counts or counts[letter] != max(counts.values()):
                 return False
-            for num in range(97, ord(letter)):
+            for num in range(ord('a'), ord(letter)):
                 if chr(num) in counts and counts[chr(num)] == counts[letter]:
                     return False
             del counts[letter]
@@ -38,11 +33,10 @@ class Room:
         for letter in self.name:
             if letter.isalpha():
                 if ord(letter) + offset > ord('z'):
-                    new_name += chr(ord('a') + offset - ord('z') + ord(letter) - 1)
+                    letter = chr(ord('a') + offset - ord('z') + ord(letter) - 1)
                 else:
-                    new_name += chr(ord(letter) + offset)
-            else:
-                new_name += letter
+                    letter = chr(ord(letter) + offset)
+            new_name += letter
         return new_name
 
 
