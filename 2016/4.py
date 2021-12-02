@@ -1,7 +1,7 @@
 class Room:
     def __init__(self, name, id, checksum):
         self.name: str = name
-        self.id: int = id
+        self.sector_id: int = sector_id
         self.checksum: str = checksum
 
     @classmethod
@@ -9,12 +9,12 @@ class Room:
         first_split = line.split("[") # aaaaa-bbb-z-y-x-123, abxyz]
         name = "".join([c for c in first_split[0] if c.isalpha() or c == "-"])
         name = name.replace("-", " ").strip()
-        id = int(first_split[0].split("-")[-1])
+        sector_id = int(first_split[0].split("-")[-1])
         checksum = first_split[1][:-1]
-        return Room(name, id, checksum)
+        return Room(name, sector_id, checksum)
 
     def __str__(self) -> str:
-        return f"Name: {self.name} | ID: {self.id} | Checksum: {self.checksum}"
+        return f"Name: {self.name} | Sector ID: {self.sector_id} | Checksum: {self.checksum}"
 
     def is_valid(self) -> bool:
         counts = {c: self.name.count(c) for c in set(self.name) if c != " "}
@@ -28,7 +28,7 @@ class Room:
         return True
 
     def decrypt(self) -> str:
-        offset = self.id % 26
+        offset = self.sector_id % 26
         new_name = ""
         for letter in self.name:
             if letter.isalpha():
@@ -39,7 +39,6 @@ class Room:
             new_name += letter
         return new_name
 
-
 with open('input4.txt', 'r') as f:
     rooms = [Room.from_line(line.strip()) for line in f.readlines()]
 
@@ -49,7 +48,7 @@ example3 = [Room.from_line("not-a-real-room-404[oarel]")]
 example4 = [Room.from_line("totally-real-room-200[decoy]")]
 
 def part_one(rooms):
-    return sum([room.id for room in rooms if room.is_valid()])
+    return sum([room.sector_id for room in rooms if room.is_valid()])
 
 assert(part_one(example1) == 123)
 assert(part_one(example2) == 987)
@@ -58,12 +57,8 @@ assert(part_one(example4) == 0)
 print(f"Part 1: {part_one(rooms)}")
 assert(part_one(rooms) == 173787)
 
-
 def part_two(rooms):
-    for room in rooms:
-        if room.decrypt() == "northpole object storage":
-            return room.id
-    return 0
+    return sum([rm.sector_id for rm in rooms if rm.decrypt() == "northpole object storage"])
 
 print(f"Part 2: {part_two(rooms)}")
 assert(part_two(rooms) == 548)
