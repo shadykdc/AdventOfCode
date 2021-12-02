@@ -33,7 +33,7 @@ class Room:
         for letter in self.name:
             if letter.isalpha():
                 if ord(letter) + offset > ord('z'):
-                    letter = chr(ord('a') + offset - ord('z') + ord(letter) - 1)
+                    letter = chr(offset + ord(letter) - 26)
                 else:
                     letter = chr(ord(letter) + offset)
             new_name += letter
