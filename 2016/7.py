@@ -62,4 +62,4 @@ assert(part_two(["xyx[xyx]xyx"]) == 0)
 assert(part_two(["aaa[kek]eke"]) == 1)
 assert(part_two(["zazbz[bzb]cdb"]) == 1)
 print(f"Part Two: {part_two(ip_addrs)}")
-# assert(part_two(ip_addrs) == 561) too high
+assert(part_two(ip_addrs) == 231)
