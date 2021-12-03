@@ -36,7 +36,7 @@ def part_two(lines):
     oxy_lines, co2_lines = get_lines(lines, '1'), get_lines(lines, '0')
     return int("".join(oxy_lines[0]), 2) * int("".join(co2_lines[0]), 2)
 
-def get_lines(lines, default = '0'):
+def get_lines(lines, default):
     out_lines = copy.copy(lines)
     for idx in range(len(lines[0])):
         if len(out_lines) == 1:
@@ -45,7 +45,7 @@ def get_lines(lines, default = '0'):
         count = {'0': len(out_lines) - total, '1': total}
         max_key = max(count, key=count.get)
         min_key = min(count, key=count.get)
-        keep = default if max_key == min_key else (max_key if default == '1' else min_key)
+        keep = default if max_key == min_key else (min_key if default == '0' else max_key)
         out_lines = [l for l in out_lines if l[idx] == keep]
     return out_lines
 
