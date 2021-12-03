@@ -33,19 +33,21 @@ print(f"Part 1: {part_one(lines)}")
 assert(part_one(lines) == 1082324)
 
 def part_two(lines):
-    oxy_lines, co2_lines = copy.copy(lines), copy.copy(lines)
-    for idx in range(len(lines[0])):
-        oxy_total = sum([int(line[idx]) for line in oxy_lines])
-        co2_total = sum([int(line[idx]) for line in co2_lines])
-        oxy_count = {'0': len(oxy_lines) - oxy_total, '1': oxy_total}
-        co2_count = {'0': len(co2_lines) - co2_total, '1': co2_total}
-        oxy_keep = '1' if max(oxy_count, key=oxy_count.get) == min(oxy_count, key=oxy_count.get) else max(oxy_count, key=oxy_count.get)
-        co2_keep = '0' if max(co2_count, key=co2_count.get) == min(co2_count, key=co2_count.get) else min(co2_count, key=co2_count.get)
-        if len(oxy_lines) > 1:
-            oxy_lines = [l for l in oxy_lines if l[idx] == oxy_keep]
-        if len(co2_lines) > 1:
-            co2_lines = [l for l in co2_lines if l[idx] == co2_keep]
+    oxy_lines, co2_lines = get_lines(lines, '1'), get_lines(lines, '0')
     return int("".join(oxy_lines[0]), 2) * int("".join(co2_lines[0]), 2)
+
+def get_lines(lines, default = '0'):
+    out_lines = copy.copy(lines)
+    for idx in range(len(lines[0])):
+        if len(out_lines) == 1:
+            return out_lines
+        total = sum([int(line[idx]) for line in out_lines])
+        count = {'0': len(out_lines) - total, '1': total}
+        max_key = max(count, key=count.get)
+        min_key = min(count, key=count.get)
+        keep = default if max_key == min_key else (max_key if default == '1' else min_key)
+        out_lines = [l for l in out_lines if l[idx] == keep]
+    return out_lines
 
 assert(part_two(example) == 230)
 print(f"Part 2: {part_two(lines)}")
