@@ -40,70 +40,46 @@ boards2 = copy.copy(boards)
 example_boards2 = copy.copy(example_boards)
 
 def is_win(board, j, i):
-    win = True
-    for y in range(BOARD_SIZE):
-        if not board[y][i][1]:
-            win = False
-            break
-    if win:
-        return win
-    win = True
-    for x in range(BOARD_SIZE):
-        if not board[j][x][1]:
-            win = False
-            break
-    return win
+    return (
+        sum([1 for y in range(BOARD_SIZE) if board[y][i][1]]) == BOARD_SIZE
+        or sum([1 for x in range(BOARD_SIZE) if board[j][x][1]]) == BOARD_SIZE
+    )
 
-def play_bingo(num, boards):
+def play_bingo(num, boards, winners):
     """Return the winning board and num"""
     for idx, board in enumerate(boards):
         for j in range(BOARD_SIZE):
             for i in range(BOARD_SIZE):
                 if board[j][i][0] == num:
                     board[j][i][1] = True
-                    if is_win(board, j, i):
-                        return idx, num
-    return -1, -1
-
-
-def play_bingo2(num, boards, winners):
-    """Return the winning board and num"""
-    for idx, board in enumerate(boards):
-        for j in range(BOARD_SIZE):
-            for i in range(BOARD_SIZE):
-                if board[j][i][0] == num:
-                    board[j][i][1] = True
-                    if is_win(board, j, i):
-                        winners[idx] = True
-                        if False not in winners:
-                            return sum_unused(boards[idx]) * num
-    return -1
+                    if is_win(board, j, i) and idx not in winners.values():
+                        winners[len(winners)+1] = idx
 
 def sum_unused(board) -> int:
-    count = 0
-    for j in range(BOARD_SIZE):
-        for i in range(BOARD_SIZE):
-            if not board[j][i][1]:
-                count+=board[j][i][0]
-    return count
+    return sum([sum(
+        [board[j][i][0]
+        for j in range(BOARD_SIZE)
+        if not board[j][i][1]]
+    ) for i in range(BOARD_SIZE)])
 
 def part_one(nums, boards):
+    winners = dict()
     for num in nums:
-        idx, num = play_bingo(num, boards)
-        if idx != -1 or num != -1:
-            return sum_unused(boards[idx]) * num
+        play_bingo(num, boards, winners)
+        if len(winners) == 1:
+            return sum_unused(boards[winners[1]]) * num
     return 0
 
 assert(part_one(example, example_boards) == 4512)
 print(f"Part 1: {part_one(nums, boards)}") # 64084
 
 def part_two(nums, boards):
-    winners = [False for board in boards]
+    winners = dict()
     for num in nums:
-        res = play_bingo2(num, boards, winners)
-        if res != -1:
-            return res
+        play_bingo(num, boards, winners)
+        if len(winners) == len(boards):
+            return sum_unused(boards[winners[len(boards)]]) * num
     return 0
 
 assert(part_two(example, example_boards2) == 1924)
-print(f"Part 2: {part_two(nums, boards2)}")
+print(f"Part 2: {part_two(nums, boards2)}") # 12833
