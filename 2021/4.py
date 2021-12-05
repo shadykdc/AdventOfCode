@@ -41,12 +41,11 @@ example_boards2 = copy.copy(example_boards)
 
 def is_win(board, j, i):
     return (
-        sum([1 for y in range(BOARD_SIZE) if board[y][i][1]]) == BOARD_SIZE
-        or sum([1 for x in range(BOARD_SIZE) if board[j][x][1]]) == BOARD_SIZE
+        sum([board[y][i][1] for y in range(BOARD_SIZE)]) == BOARD_SIZE
+        or sum([board[j][x][1] for x in range(BOARD_SIZE)]) == BOARD_SIZE
     )
 
 def play_bingo(num, boards, winners):
-    """Return the winning board and num"""
     for idx, board in enumerate(boards):
         for j in range(BOARD_SIZE):
             for i in range(BOARD_SIZE):
@@ -62,24 +61,16 @@ def sum_unused(board) -> int:
         if not board[j][i][1]]
     ) for i in range(BOARD_SIZE)])
 
-def part_one(nums, boards):
+def solution(nums, boards, place) -> int:
     winners = dict()
     for num in nums:
         play_bingo(num, boards, winners)
-        if len(winners) == 1:
-            return sum_unused(boards[winners[1]]) * num
+        if len(winners) == place:
+            return sum_unused(boards[winners[place]]) * num
     return 0
 
-assert(part_one(example, example_boards) == 4512)
-print(f"Part 1: {part_one(nums, boards)}") # 64084
+assert(solution(example, example_boards, 1) == 4512)
+print(f"Part 1: {solution(nums, boards, 1)}") # 64084
 
-def part_two(nums, boards):
-    winners = dict()
-    for num in nums:
-        play_bingo(num, boards, winners)
-        if len(winners) == len(boards):
-            return sum_unused(boards[winners[len(boards)]]) * num
-    return 0
-
-assert(part_two(example, example_boards2) == 1924)
-print(f"Part 2: {part_two(nums, boards2)}") # 12833
+assert(solution(example, example_boards2, len(example_boards2)) == 1924)
+print(f"Part 2: {solution(nums, boards2, len(boards2))}") # 12833
