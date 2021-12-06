@@ -25,8 +25,8 @@ python3 <day>.py
 
 Sometimes I go back and do them in later years but I enjoy tracking the progress of how I did in that year.
 
-2021: 12 stars (Python)
-2020: 44 stars (C++)
-2019: 25 stars (Python)
-2018: 11 stars (Python)
-2015-2017: didn't play
+* 2021: 12 stars (Python)
+* 2020: 44 stars (C++)
+* 2019: 25 stars (Python)
+* 2018: 11 stars (Python)
+* 2015-2017: didn't play
