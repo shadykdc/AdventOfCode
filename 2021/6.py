@@ -4,8 +4,8 @@ fish_ages = [1,4,1,1,1,1,1,1,1,4,3,1,1,3,5,1,5,3,2,1,1,2,3,1,1,5,3,1,5,1,1,2,1,2
 example = [3,4,3,1,2]
 
 def age_one_day(ages):
-    new_ages = defaultdict(lambda: 0)
-    for key in range(1, max(ages.keys())+ 1):
+    new_ages = defaultdict(int)
+    for key in range(1, max(ages.keys())+1):
         new_ages[key-1] = ages[key]
     new_ages[8] = ages[0]
     new_ages[6] += ages[0]
