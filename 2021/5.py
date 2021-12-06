@@ -53,7 +53,7 @@ def part_two(coords):
             elif (x1 < x2 and y1 > y2) or (x2 < x1 and y2 > y1):
                 for i in range(abs(x2-x1) + 1):
                     vents[(min(x1, x2) + i, max(y2, y1) - i)] += 1
-    return sum([1 for coord in vents if vents[coord] > 1])
+    return sum([vents[coord] > 1 for coord in vents])
 
 assert(part_two(example) == 12)
 print(f"Part 2: {part_two(coords)}")
