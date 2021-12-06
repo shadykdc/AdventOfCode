@@ -29,7 +29,7 @@ def part_one(coords):
         elif y1 == y2:
             for x in range(abs(x2-x1)+1):
                 vents[(min(x1, x2)+x, y1)] += 1
-    return sum([vents[coord] > 1 for coord in vents])
+    return len([1 for coord in vents if vents[coord] > 1])
 
 assert(part_one(example) == 5)
 print(f"Part 1: {part_one(coords)}")
@@ -53,7 +53,7 @@ def part_two(coords):
             elif (x1 < x2 and y1 > y2) or (x2 < x1 and y2 > y1):
                 for i in range(abs(x2-x1) + 1):
                     vents[(min(x1, x2) + i, max(y2, y1) - i)] += 1
-    return sum([vents[coord] > 1 for coord in vents])
+    return len([1 for coord in vents if vents[coord] > 1])
 
 assert(part_two(example) == 12)
 print(f"Part 2: {part_two(coords)}")

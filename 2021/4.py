@@ -41,8 +41,8 @@ example_boards2 = copy.copy(example_boards)
 
 def is_win(board, j, i):
     return (
-        sum([board[y][i][1] for y in range(BOARD_SIZE)]) == BOARD_SIZE
-        or sum([board[j][x][1] for x in range(BOARD_SIZE)]) == BOARD_SIZE
+        len([1 for y in range(BOARD_SIZE) if board[y][i][1]]) == BOARD_SIZE
+        or len([1 for x in range(BOARD_SIZE) if board[j][x][1]]) == BOARD_SIZE
     )
 
 def play_bingo(num, boards, winners):
