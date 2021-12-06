@@ -21,7 +21,7 @@ example = [
 def part_one(coords):
     x_dim = max([max(x1, x2) for x1, y1, x2, y2 in coords]) + 1
     y_dim = max([max(y1, y2) for x1, y1, x2, y2 in coords]) + 1
-    vents = defaultdict(lambda: 0)
+    vents = defaultdict(int)
     for x1, y1, x2, y2 in coords:
         if x1 == x2:
             for y in range(abs(y2-y1)+1):
@@ -29,7 +29,7 @@ def part_one(coords):
         elif y1 == y2:
             for x in range(abs(x2-x1)+1):
                 vents[(min(x1, x2)+x, y1)] += 1
-    return sum([1 for coord in vents if vents[coord] > 1])
+    return sum([vents[coord] > 1 for coord in vents])
 
 assert(part_one(example) == 5)
 print(f"Part 1: {part_one(coords)}")
@@ -38,7 +38,7 @@ assert(part_one(coords) == 6461)
 def part_two(coords):
     x_dim = max([max(x1, x2) for x1, y1, x2, y2 in coords]) + 1
     y_dim = max([max(y1, y2) for x1, y1, x2, y2 in coords]) + 1
-    vents = defaultdict(lambda: 0)
+    vents = defaultdict(int)
     for x1, y1, x2, y2 in coords:
         if x1 == x2:
             for y in range(abs(y2-y1)+1):
