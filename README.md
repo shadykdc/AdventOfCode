@@ -3,9 +3,7 @@
 [https://adventofcode.com/](https://adventofcode.com/)
 
 
-## 2020
-
-22/25 days completed in C++.
+## C++
 
 To run (on a mac at least):
 
@@ -14,6 +12,21 @@ To run (on a mac at least):
 3. Run `make`.
 4. Run `./aoc`.
 
-## 2019
+## Python
 
-12.5/25 days completed in Python.
+Clone the repo and run the following with python3 installed and in your path.
+
+```
+cd <year>
+python3 <day>.py
+```
+
+## My Original Scores
+
+Sometimes I go back and do them in later years but I enjoy tracking the progress of how I did in that year.
+
+2021: 12 stars (Python)
+2020: 44 stars (C++)
+2019: 25 stars (Python)
+2018: 11 stars (Python)
+2015-2017: didn't play
