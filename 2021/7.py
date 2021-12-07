@@ -5,7 +5,7 @@ my_input = [1101,1,29,67,1102,0,1,65,1008,65,35,66,1005,66,28,1,67,65,20,4,0,100
 example = [16,1,2,0,4,2,7,1,2,14]
 
 def part_one(nums):
-    pos = int(median(nums))
+    pos = round(median(nums))
     return sum([abs(num-pos) for num in nums])
 
 assert(part_one(example) == 37)
