@@ -28,6 +28,7 @@ def part_two(nums):
 
 assert(part_two(example) == 168)
 start = time.time()
-print(f"Part Two: {part_two(my_input)}")
+p2 = part_two(my_input)
 print(time.time() - start)
-assert(part_two(my_input) == 98905973)
+print(f"Part Two: {p2}")
+assert(p2 == 98905973)
