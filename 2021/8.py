@@ -100,11 +100,11 @@ def part_two(tens, outs):
     total = 0
     for idx in range(len(tens)):
         decoder = get_decoder(tens[idx])
-        print(decode(outs[idx], decoder))
         total += decode(outs[idx], decoder)
     return total
 
 
 assert(part_two([["acedgfb","cdfbe","gcdfa","fbcad","dab","cefabd","cdfgeb","eafb","cagedb","ab"]], [["cdfeb","fcadb","cdfeb","cdbaf"]]) == 5353)
 assert(part_two(example_tens, example_outs) == 61229)
-print(part_two(tens, outs)) # 397800 is too low, 1016115 is too high, 1011808 is too high
+print(f"Part Two: {part_two(tens, outs)}")
+assert(part_two(tens, outs) == 1011284)
