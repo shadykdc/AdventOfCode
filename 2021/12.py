@@ -56,8 +56,7 @@ def traverse2(caves, path, paths, found):
 
 def part_two(caves):
     paths = set()
-    found = False
-    traverse2(caves, [START], paths, found)
+    traverse2(caves, [START], paths, False)
     return len(paths)
 
 print(part_two(example1))
