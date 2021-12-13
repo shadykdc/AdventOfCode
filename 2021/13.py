@@ -24,41 +24,26 @@ ex_grid, ex_cmds, ex_x, ex_y = get_input('input13.1.txt')
 def perform_fold(grid, cmd, x, y):
     axis, dist = cmd[0], int(cmd[1])
     if axis == 'y':
-        for j in range(dist+1, y):
-            for i in range(x):
-                if grid[j][i] == '#':
-                    grid[dist-j+dist][i] = grid[j][i]
         y = dist
+        grid = [['#' if grid[j][i] == '#' else grid[y-j+y][i] for i in range(x)] for j in range(y)]
     elif axis == 'x':
-        for j in range(y):
-            for i in range(dist+1, x):
-                if grid[j][i] == '#':
-                    grid[j][dist-i+dist] = grid[j][i]
         x = dist
+        grid = [['#' if grid[j][i] == '#' else grid[j][x-i+x] for i in range(x)] for j in range(y)]
     return grid, x, y
 
-def part_one(grid, cmds, max_x, max_y):
-    grid2 = [[elem for elem in row] for row in grid]
-    x, y = int(max_x), int(max_y)
-    grid2, x, y = perform_fold(grid2, cmds[0], x, y)
-    count = 0
-    for j in range(y):
-        for i in range(x):
-            if grid2[j][i] == '#':
-                count+=1
-    return count
+def part_one(grid, cmds, x, y):
+    grid, x, y = perform_fold(grid, cmds[0], x, y)
+    return sum(row[0:x].count('#') for row in grid[0:y])
 
 assert(part_one(ex_grid, ex_cmds, ex_x, ex_y) == 17)
-print(part_one(grid, cmds, max_x, max_y))
+print(f"Part One: {part_one(grid, cmds, max_x, max_y)}")
 assert(part_one(grid, cmds, max_x, max_y) == 678)
 
-def part_two(grid, cmds, max_x, max_y):
-    grid2 = [[elem for elem in row] for row in grid]
-    x, y = int(max_x), int(max_y)
+def part_two(grid, cmds, x, y):
     for cmd in cmds:
-        grid2, x, y = perform_fold(grid2, cmd, x, y)
-    print(x, y)
+        grid, x, y = perform_fold(grid, cmd, x, y)
+    print("Part Two: ECFHLHZF")
     for j in range(y):
-        print(grid2[j][0:x])
+        print("".join(grid[j][0:x]))
 
 part_two(grid, cmds, max_x, max_y)
