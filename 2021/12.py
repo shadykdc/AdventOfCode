@@ -1,24 +1,18 @@
 from collections import defaultdict
 
-def get_input(f):
-    caves = defaultdict(list)
-    for line in f.readlines():
-        cave1, cave2 = line.strip().split("-")
-        caves[cave1].append(cave2)
-        caves[cave2].append(cave1)
-    return caves
+def get_input(name):
+    with open(name, 'r') as f:
+        caves = defaultdict(list)
+        for line in f.readlines():
+            cave1, cave2 = line.strip().split("-")
+            caves[cave1].append(cave2)
+            caves[cave2].append(cave1)
+        return caves
 
-with open('input12.txt', 'r') as f:
-    caves = get_input(f)
-
-with open('input12.1.txt', 'r') as f:
-    example1 = get_input(f)
-
-with open('input12.2.txt', 'r') as f:
-    example2 = get_input(f)
-
-with open('input12.3.txt', 'r') as f:
-    example3 = get_input(f)
+caves = get_input('input12.txt')
+example1 = get_input('input12.1.txt')
+example2 = get_input('input12.2.txt')
+example3 = get_input('input12.3.txt')
 
 START = 'start'
 END = 'end'
