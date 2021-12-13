@@ -2,21 +2,16 @@ from collections import defaultdict
 
 def get_input(name):
     with open(name, 'r') as f:
+        lines = f.readlines()
         coords = defaultdict(lambda: '.')
-        cmds = []
-        line = f.readline()
-        max_x, max_y = 0, 0
-        while line:
-            if "fold along" in line:
-                cmds.append(line.split()[2].split("="))
-            if "," in line:
-                x, y = line.strip().split(",")
-                max_x = max(max_x, int(x))
-                max_y = max(max_y, int(y))
-                coords[(int(x), int(y))] = '#'
-            line = f.readline()
-        grid = [[coords[(i, j)] for i in range(max_x+1)] for j in range(max_y+1)]
-        return grid, cmds, max_x+1, max_y+1
+        cmds = [line.split()[2].split("=") for line in lines if "fold along" in line]
+        x_coord_list = [int(line.strip().split(",")[0]) for line in lines if "," in line]
+        y_coord_list = [int(line.strip().split(",")[1]) for line in lines if "," in line]
+        for idx in range(len(x_coord_list)):
+            coords[(x_coord_list[idx], y_coord_list[idx])] = '#'
+        max_x, max_y = max(x_coord_list)+1, max(y_coord_list)+1
+        grid = [[coords[(i, j)] for i in range(max_x)] for j in range(max_y)]
+        return grid, cmds, max_x, max_y
 
 grid, cmds, max_x, max_y = get_input('input13.txt')
 ex_grid, ex_cmds, ex_x, ex_y = get_input('input13.1.txt')
