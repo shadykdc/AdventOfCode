@@ -35,7 +35,7 @@ assert(do_steps(ex_template, ex_pairs, 10).count("H") == 161)
 assert(do_steps(ex_template, ex_pairs, 10).count("N") == 865)
 assert(part_one(ex_template, ex_pairs, 10) == 1588)
 print(f"Part 1: {part_one(template, pairs, 10)}")
-assert(part_one(lines) == 3342)
+assert(part_one(template, pairs, 10) == 3342)
 
 assert(part_one(ex_template, ex_pairs, 40) == 2188189693529)
 print(f"Part 2: {part_one(template, pairs, 40)}")
