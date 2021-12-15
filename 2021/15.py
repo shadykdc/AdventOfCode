@@ -30,15 +30,11 @@ assert(part_one(example) == 40)
 print(f"Part One: {part_one(grid)}")
 
 def part_two(grid):
-    width = len(grid[0])
-    height = len(grid)
-    new_grid = [[(grid[j][i] + w) % 9 or 9 for w in range(5) for i in range(width)] for j in range(height)]
-    for j in range(height):
-        for h in range(1, 5):
+    new_grid = [[(grid[j][i] + w) % 9 or 9 for w in range(5) for i in range(len(grid[0]))] for j in range(len(grid))]
+    for h in range(1, 5):
+        for j in range(len(grid)):
             new_grid.append([(new_grid[j][i] + h) % 9 or 9 for i in range(len(new_grid[0]))])
-    for row in new_grid:
-        print("".join([str(num) for num in row]))
-    print(bfs(new_grid))
+    return bfs(new_grid)
 
 assert(part_two(example) == 315)
-print(part_two(grid))
+print(f"Part Two: {part_two(grid)}")
