@@ -34,6 +34,7 @@ def soltuion(target):
 assert(max(soltuion(example)) == 45)
 print(f"Part One: {max(soltuion(my_input))}")
 assert(max(soltuion(my_input)) == 12090)
+
 assert(len(soltuion(example)) == 112)
 print(f"Part Two: {len(soltuion(my_input))}")
 assert(len(soltuion(my_input)) == 5059)
