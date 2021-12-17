@@ -1,3 +1,5 @@
+from textwrap import dedent
+
 ex1 = "D2FE28"
 ex2 = "38006F45291200"
 ex3 = "EE00D40C823060"
@@ -13,50 +15,73 @@ def hex_to_binary(hex_string):
     return "".join(binary)
 
 class Packet:
-    def create(binary_string, idx):
-        self.version = int(binary_string[idx:idx+3], 2)
-        self.type_id = int(binary_string[idx+3:idx+6], 2)
-        idx += 6
-        self.literal = None
+    def __init__(self, binary_string, idx=0):
+        self.binstr = binary_string
+        self.version_sum = 0
+        self.idx = idx
+        self.version = -1
+        self.type_id = -1
+        self.literals = []
         self.packets = []
 
-def get_literal(binary_string, idx):
-    literals = []
-    while idx + 5 <= len(binary_string):
-        literals.append(binary_string[idx+1:idx+5])
-        idx += 5
-        if binary_string[idx-5] == '0':
-            break
-    return int("".join(literals), 2), idx
+    def __str__(self):
+        return dedent(
+            f"""
+            Version: {self.version}
+            Type Id: {self.type_id}
+            Literals: {self.literals}
+            Idx: {self.idx}
+            Len Bin Str: {len(self.binstr)}
+            Packets: {[packet.version for packet in self.packets]}
+            """
+        )
 
-def decode_packet(binary_string, idx=0):
-    versions = []
-    packet_version = int(binary_string[idx:idx+3], 2)
-    type_id = int(binary_string[idx+3:idx+6], 2)
-    versions.append(packet_version)
-    idx += 6
-    if type_id == 4:  # literal
-        literal, idx = get_literal(binary_string, idx)
-    else:  # operator
-        idx += 1
-        if binary_string[idx-1] == '0':
-            len_in_bits = int(binary_string[idx:idx+15], 2)
-            idx += 15
-            stop = idx + len_in_bits
-            while idx < stop:
-                idx, vers = decode_packet(binary_string, idx)
-                versions.extend(vers)
+    def get_literal(self):
+        literals = []
+        while self.idx + 5 <= len(self.binstr):
+            literals.append(self.binstr[self.idx+1:self.idx+5])
+            self.idx += 5
+            if self.binstr[self.idx-5] == '0':
+                break
+        self.literals.append(int("".join(literals), 2))
+
+    def process_operator(self):
+        if self.binstr[self.idx-1] == '0':
+            len_in_bits = int(self.binstr[self.idx:self.idx+15], 2)
+            self.idx += 15
+            stop = self.idx + len_in_bits
+            while self.idx < stop:
+                self.add_sub_packet()
         else:
-            num_sub_packets = int(binary_string[idx:idx+11], 2)
-            idx += 11
+            num_sub_packets = int(self.binstr[self.idx:self.idx+11], 2)
+            self.idx += 11
             for packet in range(num_sub_packets):
-                idx, vers = decode_packet(binary_string, idx)
-                versions.extend(vers)
-    return idx, versions
+                self.add_sub_packet()
+
+    def add_sub_packet(self):
+        packet = Packet(self.binstr, self.idx)
+        packet.create()
+        self.idx = packet.idx
+        self.packets.append(packet)
+
+    def create(self):
+        self.version = int(self.binstr[self.idx:self.idx+3], 2)
+        self.version_sum += self.version
+        self.type_id = int(self.binstr[self.idx+3:self.idx+6], 2)
+        self.idx += 6
+        if self.type_id == 4:  # literal
+            self.get_literal()
+        else:  # operator
+            self.idx += 1
+            self.process_operator()
+
 
 def part_one(hex_string):
-    idx, vers = decode_packet(hex_to_binary(hex_string))
-    return sum(vers)
+    packet = Packet(hex_to_binary(hex_string))
+    packet.create()
+    print(packet)
+    return packet.version_sum
+
 
 assert(hex_to_binary(ex1) == "110100101111111000101000")
 assert(part_one(ex1) == 6)
@@ -65,6 +90,7 @@ assert(part_one(ex5) == 12)
 assert(part_one(ex6) == 23)
 assert(part_one(ex7) == 31)
 print(f"Part 1: {part_one(my_input)}")
+assert(part_one(my_input) == 891)
 
 def part_two(my_input):
     return 0
