@@ -17,7 +17,6 @@ def hex_to_binary(hex_string):
 class Packet:
     def __init__(self, binary_string, idx=0):
         self.binstr = binary_string
-        self.version_sum = 0
         self.idx = idx
         self.version = -1
         self.type_id = -1
@@ -33,6 +32,7 @@ class Packet:
             Idx: {self.idx}
             Len Bin Str: {len(self.binstr)}
             Packets: {[packet.version for packet in self.packets]}
+            {[str(packet) for packet in self.packets]}
             """
         )
 
@@ -66,7 +66,6 @@ class Packet:
 
     def create(self):
         self.version = int(self.binstr[self.idx:self.idx+3], 2)
-        self.version_sum += self.version
         self.type_id = int(self.binstr[self.idx+3:self.idx+6], 2)
         self.idx += 6
         if self.type_id == 4:  # literal
@@ -75,12 +74,15 @@ class Packet:
             self.idx += 1
             self.process_operator()
 
+    def get_version_sum(self):
+        child_sum = sum([pack.get_version_sum() for pack in self.packets]) or 0
+        return self.version + child_sum
+
 
 def part_one(hex_string):
     packet = Packet(hex_to_binary(hex_string))
     packet.create()
-    print(packet)
-    return packet.version_sum
+    return packet.get_version_sum()
 
 
 assert(hex_to_binary(ex1) == "110100101111111000101000")
