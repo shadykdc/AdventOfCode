@@ -86,8 +86,7 @@ class Packet:
             self.value = 1 if self.packets[0].value == self.packets[1].value else 0
 
     def get_version_sum(self):
-        child_sum = sum([pack.get_version_sum() for pack in self.packets])
-        return self.version + child_sum
+        return self.version + sum([pack.get_version_sum() for pack in self.packets])
 
 
 def part_one(hex_string):
