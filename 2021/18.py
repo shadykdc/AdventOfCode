@@ -11,7 +11,7 @@ snailfish = get_input('input18.txt')
 example = get_input('input18.1.txt')
 
 def magnitude(numbers):
-    if type(numbers) == int:
+    if isinstance(numbers, int):
         return numbers
     return magnitude(numbers[0]) * 3 + magnitude(numbers[1]) * 2
 
@@ -42,9 +42,8 @@ def explode(numbers, level=0):
             level -= 1
         else:
             if level == 5:
-                left = int(item)
                 if last_num_idx != -1:
-                    numstr[last_num_idx] = str(int(numstr[last_num_idx]) + left)
+                    numstr[last_num_idx] = str(int(numstr[last_num_idx]) + int(item))
                 right = int(numstr[idx+2])
                 del numstr[idx-1:idx+4]
                 numstr.insert(idx-1, '0')
@@ -67,9 +66,9 @@ assert(explode([[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]) == (True, [[3,[2,[8,0]]],[9,[5
 assert(explode([[[[[4, 3], 4], 4], [7, [[8, 4], 9]]], [1, 1]]) == (True, [[[[0,7],4],[7,[[8,4],9]]],[1,1]]))
 
 def split(numbers):
-    if type(numbers) == list:
+    if isinstance(numbers, list):
         for idx, item in enumerate(numbers):
-            if type(item) == int and item >= 10:
+            if isinstance(numbers, int) and item >= 10:
                 numbers[idx] = [math.floor(item/2), math.ceil(item/2)]
                 return True
             if split(item):
