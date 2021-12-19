@@ -21,8 +21,12 @@ SHARED = 12
 ORIENTATIONS = 24
 
 def check_for_overlap(scanner, beacons):
-    starts = [(x, y, z) for x in range(RANGE) for y in range(RANGE) for z in range(RANGE)]
-    for i, j, k in starts:
+    beacon_list = [list(t) for t in beacons]
+    combos = list(itertools.product(scanner, beacon_list))
+    for combo in combos:
+        sx, sy, sz = combo[0]
+        bx, by, bz = combo[1]
+        i, j, k = bx-sx, by-sy, bz-sz
         scan = {(coord[0]+i, coord[1]+j, coord[2]+k) for coord in scanner}
         overlap = len(scan.intersection(beacons))
         if overlap >= 12:
