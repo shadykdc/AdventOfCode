@@ -25,8 +25,7 @@ def check_for_overlap(scanner, beacons):
         bx, by, bz = combo[1]
         i, j, k = bx-sx, by-sy, bz-sz
         scan = {(coord[0]+i, coord[1]+j, coord[2]+k) for coord in scanner}
-        overlap = len(scan.intersection(beacons))
-        if overlap >= SHARED:
+        if len(scan.intersection(beacons)) >= SHARED:
             return True, i, j, k
     return False, 0, 0, 0
 
@@ -45,12 +44,13 @@ def get_orientations(scanner):
     rotated_scanners = [[] for _ in range(ORIENTATIONS)]
     for coord in scanner:
         for posneg in [-1, 1]:
-            rotated_coord = [num * posneg for num in coord]
+            to_rotate = [num * posneg for num in coord]
             for axis in range(AXES):
                 for idx in range(ROTATIONS):
                     orientation = ROTATIONS*axis+idx + (12 if posneg > 0 else 0)
-                    rotated_scanners[orientation].append([num for num in rotated_coord])
-                    rotated_coord = rotate(rotated_coord, axis)
+                    rotated_scanners[orientation].append(
+                        [num for num in rotate(to_rotate, axis)]
+                    )
     return rotated_scanners
 
 def try_scanner(scanners, beacons):
@@ -59,9 +59,9 @@ def try_scanner(scanners, beacons):
     for orientation in get_orientations(scanner):
         overlap, x, y, z = check_for_overlap(orientation, beacons)
         if overlap:
+            print(f"Success {x} {y} {z}")
             for i, j, k in orientation:
                 beacons.add((i+x, j+y, k+z))
-            print(f"Success {x} {y} {z}")
             return
     scanners.append(scanner)
 
