@@ -21,8 +21,7 @@ SHARED = 12
 ORIENTATIONS = 24
 
 def check_for_overlap(scanner, beacons):
-    beacon_list = [list(t) for t in beacons]
-    combos = list(itertools.product(scanner, beacon_list))
+    combos = list(itertools.product(scanner, [list(t) for t in beacons]))
     for combo in combos:
         sx, sy, sz = combo[0]
         bx, by, bz = combo[1]
