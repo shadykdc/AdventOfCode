@@ -54,17 +54,21 @@ def get_orientations(scanner):
     return rotated_scanners
 
 def try_scanner(scanners, beacons):
-    scanner = scanners.pop()
+    scanner = scanners.pop(0)
+    print(f"Trying scanner with {scanner[0]}")
     for orientation in get_orientations(scanner):
         overlap, x, y, z = check_for_overlap(orientation, beacons)
         if overlap:
             for i, j, k in orientation:
                 beacons.add((i+x, j+y, k+z))
+            print(f"Success {x} {y} {z}")
             return
     scanners.append(scanner)
 
 def populate_beacons(scanners, beacons):
-    beacons = {tuple(coord) for coord in scanners.pop(0)}
+    first_scanner = scanners.pop(0)
+    print(f"First scanner has {first_scanner[0]}")
+    beacons = {tuple(coord) for coord in first_scanner}
     while len(scanners) > 0:
         try_scanner(scanners, beacons)
 
@@ -74,6 +78,7 @@ def part_one(scanners):
     populate_beacons(scanners, beacons)
     return len(beacons)
 
+# test to make sure my code works
 s = [[
     [-618,-824,-621],
     [-537,-823,-458],
@@ -103,8 +108,8 @@ b = [
     (553,889,-390),
 ]
 x, y, z = 68,-1246,-43
-try_scanner(s, set(b))
-assert(len(s) == 0)
+# try_scanner(s, set(b))
+# assert(len(s) == 0)
 
 print(f"Example: {part_one(example)}")
 # print(f"Part 1: {part_one(scanners)}")
