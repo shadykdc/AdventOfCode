@@ -47,7 +47,6 @@ def solution(algo, in_img, steps=2):
     pad_image(img, val=ZERO, times=steps)
     for step in range(steps):
         default = ZERO if not step % 2 or algo[0] == ZERO else ONE
-        print_img(img)
         img = enhance(algo, img, default)
     return count_pixels(img)
 
