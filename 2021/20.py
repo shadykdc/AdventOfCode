@@ -44,13 +44,14 @@ def pad_image(img, val=ZERO, times=1):
 
 def solution(algo, in_img, steps=2):
     img = [[ch for ch in row] for row in in_img]
+    pad_image(img, val=ZERO, times=steps)
     for step in range(steps):
         default = ZERO if not step % 2 or algo[0] == ZERO else ONE
-        pad_image(img, val=default)
+        print_img(img)
         img = enhance(algo, img, default)
     return count_pixels(img)
 
-assert(solution(ex_algo, ex_img, 2) == 35)
+assert(solution(ex_algo, ex_img) == 35)
 p1 = solution(img_algo, img)
 print(f"Part One: {p1}")
 assert(p1 == 5379)
