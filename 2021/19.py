@@ -17,31 +17,26 @@ def get_input(name):
 scanners = get_input('input19.txt')
 example = get_input('input19.1.txt')
 
-SHARED = 12
-
 def check_for_overlap(scanner, beacons):
-    combos = list(itertools.product(scanner, [list(t) for t in beacons]))
-    for combo in combos:
+    for combo in list(itertools.product(scanner, [list(t) for t in beacons])):
         sx, sy, sz = combo[0]
         bx, by, bz = combo[1]
         i, j, k = bx-sx, by-sy, bz-sz
         scan = {(coord[0]+i, coord[1]+j, coord[2]+k) for coord in scanner}
-        if len(scan.intersection(set(beacons.keys()))) >= SHARED:
+        if len(scan.intersection(set(beacons.keys()))) >= 12:
             return True, i, j, k
     return False, 0, 0, 0
 
 def rotate(coord, axis):
     axes = [num for num in [0, 1, 2] if num != axis]
-    temp = coord[axes[0]]
-    coord[axes[0]] = coord[axes[1]]
-    coord[axes[1]] = -temp
+    coord[axes[0]], coord[axes[1]] = coord[axes[1]], -coord[axes[0]]
     return coord
 
-AXES = 3
+FACES = 6
 ROTATIONS = 4
-ORIENTATIONS = 2 * AXES * ROTATIONS
+ORIENTATIONS = FACES * ROTATIONS
 
-def facing_options(coord):
+def get_faces(coord):
     return [
         [coord[2], coord[1], -coord[0]],  # face left (rotate about x-axis)
         [coord[0], coord[2], -coord[1]],  # face up (rotate about y-axis)
@@ -54,17 +49,17 @@ def facing_options(coord):
 def get_orientations(scanner):
     rotated_scanners = [[] for _ in range(ORIENTATIONS)]
     for coord in scanner:
-        for axis, to_rotate in enumerate(facing_options(coord)):
+        for face, to_rotate in enumerate(get_faces(coord)):
             for idx in range(ROTATIONS):
-                orientation = ROTATIONS*axis+idx
+                orientation = ROTATIONS*face+idx
                 rotated_scanners[orientation].append(
-                    [num for num in rotate(to_rotate, axis%3)]
+                    [num for num in rotate(to_rotate, face%3)]
                 )
     return rotated_scanners
 
 def try_scanner(scanners, beacons, locations):
     scanner = scanners.pop(0)
-    print(f"Trying scanner with {scanner[0]} ({len(scanners)} left)")
+    print(f"Trying scanner with {scanner[0]} ({len(scanners)} scanners left)")
     for orientation in get_orientations(scanner):
         overlap, x, y, z = check_for_overlap(orientation, beacons)
         if overlap:
