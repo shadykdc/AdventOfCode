@@ -1,12 +1,10 @@
-# my input
+from functools import lru_cache
+from itertools import product
+
 p1 = 3
 p2 = 10
-
-# example
-p1_2 = 4
-p2_2 = 8
-
-ROLLS = 3
+p1_ex = 4
+p2_ex = 8
 
 def get_roll(num):
     return sum([num % 100 for num in [num + i for i in range(3)]])
@@ -27,31 +25,38 @@ def part_one(p1, p2):
         p2, p2_score, roll = take_turn(p2, p2_score, roll)
     return p1_score * roll
 
-assert(part_one(p1_2, p2_2) == 739785)
+assert(part_one(p1_ex, p2_ex) == 739785)
 print(f"Part One: {part_one(p1, p2)}")
 
 def take_turns(pos, score):
-    for roll in range(1, 4):
-        pos = move(pos, roll)
-        yield pos, score + pos
+    return [
+        (move(pos, roll), move(pos, roll) + score)
+        for roll in [sum(list(t)) for t in product([1, 2, 3], repeat=3)]
+    ]
 
-def play(p1, p2, p1_score, p2_score, limit, p1_turn, wins):
-    if p1_turn:
-        for pos, score in take_turns(p1, p1_score):
-            if score >= limit:
-                wins['p1'] += 1
-                return
-            play(pos, p2, score, p2_score, limit, False, wins)
-    else:
-        for pos, score in take_turns(p2, p2_score):
-            if score >= limit:
-                wins['p2'] += 1
-                return
-            play(p1, pos, p1_score, score, limit, True, wins)
+@lru_cache(maxsize=None)
+def play(p1, p2, p1_score, p2_score, limit, p1_turn):
+    if p1_score >= limit:
+        return (1, 0)
+    if p2_score >= limit:
+        return (0, 1)
+    p1_wins, p2_wins = 0, 0
+    for pos, score in take_turns(
+        p1 if p1_turn else p2, p1_score if p1_turn else p2_score
+    ):
+        a, b = play(
+            pos if p1_turn else p1,
+            p2 if p1_turn else pos,
+            score if p1_turn else p1_score,
+            p2_score if p1_turn else score,
+            limit, not p1_turn
+        )
+        p1_wins += a
+        p2_wins += b
+    return (p1_wins, p2_wins)
 
 def part_two(p1, p2):
-    wins = {'p1': 0, 'p2': 0}
-    play(p1, p2, 0, 0, 21, True, wins)
-    return max(wins['p1'], wins['p2'])
+    return max(play(p1, p2, 0, 0, 21, True))
 
-print(part_two(p1_2, p2_2))
+assert(part_two(p1_ex, p2_ex) == 444356092776315)
+print(f"Part Two: {part_two(p1, p2)}")
