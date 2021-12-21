@@ -59,12 +59,12 @@ def get_orientations(scanner):
 
 def try_scanner(scanners, beacons, locations):
     scanner = scanners.pop(0)
-    print(f"Trying scanner with {scanner[0]} ({len(scanners)} scanners left)")
+    # print(f"Trying scanner with {scanner[0]} ({len(scanners)} scanners left)")
     for orientation in get_orientations(scanner):
         overlap, x, y, z = check_for_overlap(orientation, beacons)
         if overlap:
             locations.add((x, y, z))
-            print(f"Success at {x} {y} {z}")
+            # print(f"Success at {x} {y} {z}")
             for i, j, k in orientation:
                 beacons[(i+x, j+y, k+z)] += 1
             return
@@ -85,6 +85,7 @@ def part_one(scanners):
 
 assert(part_one(example) == 79)
 print(f"Part 1: {part_one(scanners)}")
+assert(part_one(scanners) == 353)
 
 def distance(loc1, loc2):
     x1, y1, z1 = loc1
@@ -103,4 +104,5 @@ def part_two(scanners):
     ])
 
 assert(part_two(example) == 3621)
-print(part_two(scanners))
+print(f"Part 2: {part_two(scanners)}")
+assert(part_two(scanners) == 10832)
