@@ -46,9 +46,9 @@ def facing_options(coord):
         [coord[2], coord[1], -coord[0]],  # face left (rotate about x-axis)
         [coord[0], coord[2], -coord[1]],  # face up (rotate about y-axis)
         [coord[0], coord[1], coord[2]],   # face forward (rotate about z-axis)
-        [-coord[2], coord[1], coord[0]],  # face right (rotate about -x-axis)
-        [coord[0], -coord[2], coord[1]],  # face down (rotate about -y-axis)
-        [-coord[0], coord[1], -coord[2]], # face back (rotate about -z-axis)
+        [-coord[2], coord[1], coord[0]],  # face right (rotate about x-axis)
+        [coord[0], -coord[2], coord[1]],  # face down (rotate about y-axis)
+        [-coord[0], coord[1], -coord[2]], # face back (rotate about z-axis)
     ]
 
 def get_orientations(scanner):
