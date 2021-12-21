@@ -16,18 +16,18 @@ def print_img(img):
         print("".join(['.' if ch == ZERO else '#' for ch in row]))
     print(" ")
 
-def get_number(img, i, j, default):
+def get_number(img, i, j, bg):
     binarystr = [
-        default if x not in range(0, len(img[0])) or y not in range(0, len(img))
+        bg if x not in range(0, len(img[0])) or y not in range(0, len(img))
         else img[y][x]
         for y in range(j-1, j+2)
         for x in range(i-1, i+2)
     ]
     return int("".join(binarystr), 2)
 
-def enhance(img_algo, img, default):
+def enhance(img_algo, img, bg):
     return [
-        [img_algo[get_number(img, i, j, default)] for i in range(len(img[0]))]
+        [img_algo[get_number(img, i, j, bg)] for i in range(len(img[0]))]
         for j in range(len(img))
     ]
 
@@ -46,8 +46,9 @@ def solution(algo, in_img, steps=2):
     img = [[ch for ch in row] for row in in_img]
     pad_image(img, val=ZERO, times=steps)
     for step in range(steps):
-        default = ZERO if not step % 2 or algo[0] == ZERO else ONE
-        img = enhance(algo, img, default)
+        # the background flickers when algo[0] == ONE and algo[-1] == ZERO
+        bg = ZERO if not step % 2 or algo[0] == ZERO else ONE
+        img = enhance(algo, img, bg)
     return count_pixels(img)
 
 assert(solution(ex_algo, ex_img) == 35)
