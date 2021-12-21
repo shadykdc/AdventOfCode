@@ -29,38 +29,23 @@ assert(part_one(p1_ex, p2_ex) == 739785)
 print(f"Part One: {part_one(p1, p2)}")
 assert(part_one(p1, p2) == 713328)
 
-def get_possible_rolls():
-    return [sum(list(t)) for t in product([1, 2, 3], repeat=3)]
-
-def take_turns(pos, score):
-    return [
-        (move(pos, roll), move(pos, roll) + score)
-        for roll in get_possible_rolls()
-    ]
+ROLLS = [sum(list(t)) for t in product([1, 2, 3], repeat=3)]
 
 @lru_cache(maxsize=None)
-def play(p1, p2, p1_score, p2_score, limit, p1_turn):
+def play(p1, p2, p1_score, p2_score, limit):
     if p1_score >= limit:
         return (1, 0)
     if p2_score >= limit:
         return (0, 1)
     p1_wins, p2_wins = 0, 0
-    for pos, score in take_turns(
-        p1 if p1_turn else p2, p1_score if p1_turn else p2_score
-    ):
-        a, b = play(
-            pos if p1_turn else p1,
-            p2 if p1_turn else pos,
-            score if p1_turn else p1_score,
-            p2_score if p1_turn else score,
-            limit, not p1_turn
-        )
-        p1_wins += a
-        p2_wins += b
+    for pos in [move(p1, roll) for roll in ROLLS]:
+        a, b = play(p2, pos, p2_score, pos + p1_score, limit)
+        p2_wins += a
+        p1_wins += b
     return (p1_wins, p2_wins)
 
 def part_two(p1, p2):
-    return max(play(p1, p2, 0, 0, 21, True))
+    return max(play(p1, p2, 0, 0, 21))
 
 assert(part_two(p1_ex, p2_ex) == 444356092776315)
 print(f"Part Two: {part_two(p1, p2)}")
