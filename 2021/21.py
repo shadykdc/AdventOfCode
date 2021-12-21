@@ -6,11 +6,11 @@ p2 = 10
 p1_ex = 4
 p2_ex = 8
 
-def get_roll(num):
-    return sum([num % 100 for num in [num + i for i in range(3)]])
-
 def move(pos, move):
     return (pos + move - 1) % 10 + 1
+
+def get_roll(num):
+    return sum([num % 100 for num in [num + i for i in range(3)]])
 
 def take_turn(p, score, roll):
     p = move(p, get_roll(roll+1))
@@ -27,11 +27,15 @@ def part_one(p1, p2):
 
 assert(part_one(p1_ex, p2_ex) == 739785)
 print(f"Part One: {part_one(p1, p2)}")
+assert(part_one(p1, p2) == 713328)
+
+def get_possible_rolls():
+    return [sum(list(t)) for t in product([1, 2, 3], repeat=3)]
 
 def take_turns(pos, score):
     return [
         (move(pos, roll), move(pos, roll) + score)
-        for roll in [sum(list(t)) for t in product([1, 2, 3], repeat=3)]
+        for roll in get_possible_rolls()
     ]
 
 @lru_cache(maxsize=None)
@@ -60,3 +64,4 @@ def part_two(p1, p2):
 
 assert(part_two(p1_ex, p2_ex) == 444356092776315)
 print(f"Part Two: {part_two(p1, p2)}")
+assert(part_two(p1, p2) == 92399285032143)
