@@ -63,13 +63,16 @@ assert(p1 == 612714)
 def part_two(steps):
     steps = [step for step in steps]
     on_count, idx = 0, 1
+    count = 1
     while idx < len(steps):
-        print(idx)
+        print(count, idx)
+        count += 1
         cur = steps[idx]
+        print(cur.x1, cur.x2)
         prev_idx = idx
+        to_insert = []
         if cur.on:
-            to_insert = []
-            for prev in steps[0:prev_idx]:
+            for prev in steps[0:idx]:
                 if prev.on and cur.get_shared_volume(prev):
                     overlap = cur.get_shared_coords(prev)
                     to_insert.append(RebootStep(False, overlap))
@@ -78,16 +81,16 @@ def part_two(steps):
                     to_insert.append(RebootStep(True, overlap))
             for step in to_insert:
                 steps.insert(idx, step)
-        else:
-            to_insert = []
-            for prev in steps[0:prev_idx]:
-                to_insert.append(RebootStep(True, cur.get_coords()))
                 idx += 1
+        else:
+            for prev in steps[0:idx]:
+                to_insert.append(RebootStep(True, cur.get_coords()))
                 if cur.on and cur.get_shared_volume(prev):
                     overlap = cur.get_shared_coords(prev)
                     to_insert.append(RebootStep(False, overlap))
             for step in to_insert:
                 steps.insert(idx, step)
+                idx += 1
         idx += 1
     for step in steps:
         if step.on:
