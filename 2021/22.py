@@ -45,7 +45,9 @@ class Cube:
              - sum([cube.calculate_volume() for cube in self.off])
 
     def get_shared_volume(self, cube):
-        return max(min(self.x2, cube.x2)-max(self.x1, cube.x1)+1, 0) * max(min(self.y2, cube.y2)-max(self.y1, cube.y1)+1, 0) * max(min(self.z2, cube.z2)-max(self.z1, cube.z1)+1, 0)
+        return max(min(self.x2, cube.x2)-max(self.x1, cube.x1)+1, 0) \
+             * max(min(self.y2, cube.y2)-max(self.y1, cube.y1)+1, 0) \
+             * max(min(self.z2, cube.z2)-max(self.z1, cube.z1)+1, 0)
 
 def get_input(name):
     with open(name, 'r') as f:
