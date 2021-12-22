@@ -66,30 +66,27 @@ def part_two(steps):
     while idx < len(steps):
         print(steps[idx].x1, idx)
         cur = steps[idx]
-        prev_idx = idx
         to_insert = []
         if cur.on:
+            for prev in steps[0:idx]:
+                if cur.get_shared_volume(prev):
+                    overlap = cur.get_shared_coords(prev)
+                    to_insert.append(RebootStep(not prev.on, overlap))
+        else:
+            del steps[idx]
             for prev in steps[0:idx]:
                 if prev.on and cur.get_shared_volume(prev):
                     overlap = cur.get_shared_coords(prev)
                     to_insert.append(RebootStep(False, overlap))
-                if not prev.on and cur.get_shared_volume(prev):
-                    overlap = cur.get_shared_coords(prev)
-                    to_insert.append(RebootStep(True, overlap))
-        else:
-            for prev in steps[0:idx]:
-                to_insert.append(RebootStep(True, cur.get_coords()))
-                if cur.on and cur.get_shared_volume(prev):
-                    overlap = cur.get_shared_coords(prev)
-                    to_insert.append(RebootStep(False, overlap))
+            idx -= 1
         for step in to_insert:
             steps.insert(idx, step)
         idx += 1 + len(to_insert)
     for step in steps:
         if step.on:
-            on_count += step.vol()
+            on_count += step.vol
         else:
-            on_count -= step.vol()
+            on_count -= step.vol
     return on_count
 
 p2_ex = part_two(example2)
