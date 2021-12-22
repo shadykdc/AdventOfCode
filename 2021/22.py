@@ -12,8 +12,14 @@ class RebootStep:
         self.z2 = int(nums[5])
         self.vol = self.calculate_volume()
 
+    def __str__(self):
+        return f"{'on' if self.on else 'off'} {self.x1} {self.x2}"
+
+    def get_coords(self):
+        return [self.x1, self.x2, self.y1, self.y2, self.z1, self.z2]
+
     def get_shared_coords(self, step):
-        return [max(self.x1, step.x1), min(self.x2, step.x2)+1, max(self.y1, step.y1), min(self.y2, step.y2)+1, max(self.z1, step.z1), min(self.z2, step.z2)+1]
+        return [max(self.x1, step.x1), min(self.x2, step.x2), max(self.y1, step.y1), min(self.y2, step.y2), max(self.z1, step.z1), min(self.z2, step.z2)]
 
     def out_of_bounds(self):
         return abs(self.x1) > 50 or abs(self.x2) > 50 or abs(self.y1) > 50 or abs(self.y2) > 50 or abs(self.z1) > 50 or abs(self.z2) > 50
@@ -58,20 +64,41 @@ def part_two(steps):
     steps = [step for step in steps]
     on_count, idx = 0, 1
     while idx < len(steps):
+        print(idx)
         cur = steps[idx]
-        for prev in steps[0:idx]:
-            if cur.on and prev.on and cur.get_shared_volume(prev):
-                overlap = cur.get_shared_coords(prev)
-                steps.insert(idx-1, RebootStep(False, overlap))
+        prev_idx = idx
+        if cur.on:
+            to_insert = []
+            for prev in steps[0:prev_idx]:
+                if prev.on and cur.get_shared_volume(prev):
+                    overlap = cur.get_shared_coords(prev)
+                    to_insert.append(RebootStep(False, overlap))
+                if not prev.on and cur.get_shared_volume(prev):
+                    overlap = cur.get_shared_coords(prev)
+                    to_insert.append(RebootStep(True, overlap))
+            for step in to_insert:
+                steps.insert(idx, step)
+        else:
+            to_insert = []
+            for prev in steps[0:prev_idx]:
+                to_insert.append(RebootStep(True, cur.get_coords()))
                 idx += 1
+                if cur.on and cur.get_shared_volume(prev):
+                    overlap = cur.get_shared_coords(prev)
+                    to_insert.append(RebootStep(False, overlap))
+            for step in to_insert:
+                steps.insert(idx, step)
         idx += 1
     for step in steps:
         if step.on:
             on_count += step.calculate_volume()
+        else:
+            on_count -= step.calculate_volume()
     return on_count
 
-print(part_two(example2))
-assert(part_two(example2) == 2758514936282235)
+p2_ex = part_two(example2)
+print(p2_ex)
+assert(p2_ex == 2758514936282235)
 p2 = part_two(steps)
 print(f"Part Two: {p2}")
 assert(p2 > 0)
