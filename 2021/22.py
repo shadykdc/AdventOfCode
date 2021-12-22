@@ -76,24 +76,20 @@ def part_two(steps):
                 if not prev.on and cur.get_shared_volume(prev):
                     overlap = cur.get_shared_coords(prev)
                     to_insert.append(RebootStep(True, overlap))
-            for step in to_insert:
-                steps.insert(idx, step)
-                idx += 1
         else:
             for prev in steps[0:idx]:
                 to_insert.append(RebootStep(True, cur.get_coords()))
                 if cur.on and cur.get_shared_volume(prev):
                     overlap = cur.get_shared_coords(prev)
                     to_insert.append(RebootStep(False, overlap))
-            for step in to_insert:
-                steps.insert(idx, step)
-                idx += 1
-        idx += 1
+        for step in to_insert:
+            steps.insert(idx, step)
+        idx += 1 + len(to_insert)
     for step in steps:
         if step.on:
-            on_count += step.calculate_volume()
+            on_count += step.vol()
         else:
-            on_count -= step.calculate_volume()
+            on_count -= step.vol()
     return on_count
 
 p2_ex = part_two(example2)
