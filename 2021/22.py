@@ -63,12 +63,9 @@ assert(p1 == 612714)
 def part_two(steps):
     steps = [step for step in steps]
     on_count, idx = 0, 1
-    count = 1
     while idx < len(steps):
-        print(count, idx)
-        count += 1
+        print(steps[idx].x1, idx)
         cur = steps[idx]
-        print(cur.x1, cur.x2)
         prev_idx = idx
         to_insert = []
         if cur.on:
