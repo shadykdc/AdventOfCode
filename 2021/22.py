@@ -1,6 +1,6 @@
 import re
 
-class RebootStep:
+class Cube:
     def __init__(self, on, nums):
         self.on = on
         assert(len(nums) == 6)
@@ -19,6 +19,7 @@ class RebootStep:
         return [self.x1, self.x2, self.y1, self.y2, self.z1, self.z2]
 
     def get_shared_coords(self, step):
+        # get_shared_volume must be true
         return [max(self.x1, step.x1), min(self.x2, step.x2), max(self.y1, step.y1), min(self.y2, step.y2), max(self.z1, step.z1), min(self.z2, step.z2)]
 
     def out_of_bounds(self):
@@ -33,7 +34,7 @@ class RebootStep:
 def get_input(name):
     with open(name, 'r') as f:
         steps = [
-            RebootStep(line[1] == 'n', re.findall('[-]?\d+', line.strip()))
+            Cube(line[1] == 'n', re.findall('[-]?\d+', line.strip()))
             for line in f.readlines()
         ]
         return steps
@@ -62,29 +63,24 @@ assert(p1 == 612714)
 
 def part_two(steps):
     steps = [step for step in steps]
-    on_count, idx = 0, 1
-    to_insert = []
+    cubes = []
+    on_count = 0
+
     for step in steps:
-        cur = steps[idx]
-        if cur.on:
-            to_insert.extend([
-                RebootStep(False, cur.get_shared_coords(prev))
-                for prev in steps[0:idx]
-                if cur.get_shared_volume(prev) and prev.on
-            ])
-        else:
-            # to_insert.append(RebootStep(True, cur.get_coords()))
-            # to_insert.extend([
-            #     RebootStep(False, cur.get_shared_coords(prev))
-            #     for prev in steps[0:idx]
-            #     if prev.on and cur.get_shared_volume(prev)
-            # ])
-    steps.extend(to_insert)
-    for step in steps:
+        cube_len = len(cubes)
         if step.on:
             on_count += step.vol
-        else:
-            on_count -= step.vol
+            cubes.append(step)
+        for i in range(cube_len):
+            shared_volume = step.get_shared_volume(cubes[i])
+            if cubes[i].on and shared_volume:
+                overlap = Cube(False, step.get_shared_coords(cubes[i]))
+                on_count -= shared_volume
+                cubes.append(overlap)
+            elif shared_volume:
+                overlap = Cube(True, step.get_shared_coords(cubes[i]))
+                on_count += shared_volume
+                cubes.append(overlap)
     return on_count
 
 p2_ex = part_two(example2)
