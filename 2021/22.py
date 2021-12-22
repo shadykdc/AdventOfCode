@@ -63,25 +63,23 @@ assert(p1 == 612714)
 def part_two(steps):
     steps = [step for step in steps]
     on_count, idx = 0, 1
-    while idx < len(steps):
-        print(steps[idx].x1, idx)
+    to_insert = []
+    for step in steps:
         cur = steps[idx]
         if cur.on:
-            to_insert = [
-                RebootStep(True, cur.get_shared_coords(prev))
-                for prev in steps[0:idx]
-                if cur.get_shared_volume(prev) and prev.on
-            ]
-        else:
-            to_insert = [
+            to_insert.extend([
                 RebootStep(False, cur.get_shared_coords(prev))
                 for prev in steps[0:idx]
-                if prev.on and cur.get_shared_volume(prev)
-            ]
-            del steps[idx]
-        for step in to_insert:
-            steps.insert(idx, step)
-        idx += 1 + len(to_insert)
+                if cur.get_shared_volume(prev) and prev.on
+            ])
+        else:
+            # to_insert.append(RebootStep(True, cur.get_coords()))
+            # to_insert.extend([
+            #     RebootStep(False, cur.get_shared_coords(prev))
+            #     for prev in steps[0:idx]
+            #     if prev.on and cur.get_shared_volume(prev)
+            # ])
+    steps.extend(to_insert)
     for step in steps:
         if step.on:
             on_count += step.vol
