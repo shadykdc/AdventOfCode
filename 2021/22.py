@@ -88,7 +88,6 @@ def part_two(steps):
     return sum([cube.calculate_volume() for cube in cubes])
 
 p2_ex = part_two(example2)
-print(p2_ex)
 assert(p2_ex == 2758514936282235)
 p2 = part_two(steps)
 print(f"Part Two: {p2}")
