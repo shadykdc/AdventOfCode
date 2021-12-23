@@ -79,21 +79,17 @@ def col_is_clear(diagram, i, j, off):
 
 def enter_moves(diagram, i, j):
     moves = []
-    if j != 1:
-        return moves
-    for xoff in range(-10, 11):
-        if i+xoff in range(len(diagram[0]))\
-        and i+xoff == ROOMS[diagram[j][i]]\
-        and row_is_clear(diagram, i, j, xoff):
-            for yoff in reversed(range(1, len(diagram)-2)): # start with bottom
-                if j+yoff in range(1, len(diagram)-1)\
-                and diagram[yoff+j][xoff+i] == '.'\
-                and col_is_clear(diagram, i+xoff, j, yoff)\
-                and not bad_letters_in_col(diagram, i+xoff):
-                    moves.append(
-                        (xoff+i, j+yoff, ENERGY[diagram[j][i]] * (abs(xoff) + abs(yoff)))
-                    )
-                    break # always go to the bottom
+    xoff = ROOMS[diagram[j][i]] - i
+    if j == 1 and row_is_clear(diagram, i, j, xoff):
+        for yoff in reversed(range(1, len(diagram)-2)): # start with bottom
+            if j+yoff in range(1, len(diagram)-1)\
+            and diagram[yoff+j][xoff+i] == '.'\
+            and col_is_clear(diagram, i+xoff, j, yoff)\
+            and not bad_letters_in_col(diagram, i+xoff):
+                moves.append(
+                    (xoff+i, j+yoff, ENERGY[diagram[j][i]] * (abs(xoff) + abs(yoff)))
+                )
+                break # always go to the bottom
     return moves
 
 def bad_letters_in_col(diagram, i):
@@ -118,11 +114,11 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, seen, energy):
-    # print(f"energy: {energy};")
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(0.05)
+    print(f"energy: {energy};")
+    print(diagram)
+    printd(diagram)
+    import time
+    time.sleep(0.02)
     diagram = [[ch for ch in row] for row in diagram]
     for y1 in range(1, len(diagram)-1): # greedy - always try to enter first
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
