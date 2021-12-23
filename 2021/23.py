@@ -33,22 +33,7 @@ def get_state(diagram):
     return "".join(["".join(row) for row in diagram])
 
 def complete(diagram):
-    return get_state(diagram) == """\
-#############
-#...........#
-###A#B#C#D###
-###A#B#C#D###
-#############"""
-
-def legal_move(diagram, i, j, x, y):
-    if x+i in range(len(diagram[0]))\
-    and y+j in range(len(diagram))\
-    and diagram[y+j][x+i] == "."\
-    and not (j == 1 and x+i not in ROOMS.values())\
-    and not (y+j >= 2 and x+i != ROOMS[letter]\
-    and not (y+j == 2 and diagram[3][x+i] not in {letter, '.'})):
-        return True
-    return False
+    return get_state(diagram) == "##############...........####A#B#C#D######A#B#C#D################"
 
 def moves(diagram, letter, i, j):
     moves = []
@@ -77,7 +62,7 @@ def moves(diagram, letter, i, j):
                 else: # small lateral move
                     moves.append((x+i, j, ENERGY[letter]))
     # exit room if not in its home
-    elif ROOMS[diagram[j][i]] != i:
+    elif ROOMS[letter] != i or diagram[j+1][i] in ROOMS and ROOMS[diagram[j+1][i]] != i:
         for x in [1, -1]:
             if diagram[j-1][i+x] == '.':
                 moves.append((x+i, j-1, ENERGY[letter] * 2))
@@ -91,28 +76,27 @@ def printd(diagram):
     print(" ")
 import time
 def get_solutions(diagram, solutions, seen, energy):
+    # print(energy)
+    # printd(diagram)
+    # time.sleep(0.1)
     diagram = [[ch for ch in row] for row in diagram]
-    printd(diagram)
-    time.sleep(1)
     if complete(diagram):
         solutions.append(energy)
         return
-    for y1, row in enumerate(diagram):
-        for x1, ch in enumerate(row):
+    for y1 in [2, 1, 3]:
+        for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
+            ch = diagram[y1][x1]
             if ch in ENERGY:
                 for x2, y2, e in moves(diagram, ch, x1, y1):
-                    diagram[y1][x1] = '.'
-                    diagram[y2][x2] = ch
-                    state = get_state(diagram)
-                    if state in seen:
+                    if energy + e < min(solutions):
+                        diagram[y1][x1] = '.'
+                        diagram[y2][x2] = ch
+                        state = get_state(diagram)
+                        if state not in seen or complete(diagram):
+                            seen.add(state)
+                            get_solutions(diagram, solutions, seen, energy + e)
                         diagram[y1][x1] = ch
                         diagram[y2][x2] = '.'
-                    else:
-                        seen.add(state)
-                        if energy + e < min(solutions):
-                            get_solutions(diagram, solutions, seen, energy + e)
-                            diagram[y1][x1] = ch
-                            diagram[y2][x2] = '.'
 
 def part_one(diagram):
     solutions = [999999999]
@@ -121,4 +105,7 @@ def part_one(diagram):
     return min(solutions)
 
 print(part_one(example))
-print(part_one(diagram))
+assert(part_one(example) == 12521)
+p1 = part_one(diagram)
+assert(p1 < 56612)
+print(p1)
