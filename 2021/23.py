@@ -67,7 +67,6 @@ def row_is_clear(diagram, i, j, off):
     return True
 
 def col_is_clear(diagram, i, j, off):
-    assert(i in list(ROOMS.values()))
     if off < 0:
         for o in range(off, 0):
             if diagram[j+o][i] != '.':
@@ -78,8 +77,9 @@ def col_is_clear(diagram, i, j, off):
                 return False
     return True
 
-def enter_moves(diagram, letter, i, j):
+def enter_moves(diagram, i, j):
     moves = []
+    letter = diagram[j][i]
     if j != 1:
         return moves
     for xoff in range(-10, 11):
@@ -90,26 +90,26 @@ def enter_moves(diagram, letter, i, j):
                 if j+yoff in range(1, len(diagram)-1)\
                 and diagram[yoff+j][xoff+i] == '.'\
                 and col_is_clear(diagram, i+xoff, j, yoff)\
-                and no_bad_letters_in_col(diagram, i+xoff):
+                and not bad_letters_in_col(diagram, i+xoff):
                     moves.append((xoff+i, j+yoff, ENERGY[letter] * (abs(xoff) + abs(yoff))))
                     break # always go to the bottom
     return moves
 
-def no_bad_letters_in_col(diagram, i):
+def bad_letters_in_col(diagram, i):
     for j in range(2, len(diagram)-1):
         letter = diagram[j][i]
         if letter != '.' and ROOMS[letter] != i:
-            return False
-    return True
+            return True
+    return False
 
-def exit_moves(diagram, letter, i, j):
+def exit_moves(diagram, i, j):
     exits = []
-    if j != 1 and not no_bad_letters_in_col(diagram, i):
+    if j != 1 and bad_letters_in_col(diagram, i):
         for xoff in range(1-i, len(diagram[0])-1-i):
             if xoff+i not in ROOMS.values()\
             and col_is_clear(diagram, i, j, 1-j)\
             and row_is_clear(diagram, i, 1, xoff):
-                exits.append((i+xoff, 1, ENERGY[letter] * (abs(xoff) + abs(1-j))))
+                exits.append((i+xoff, 1, ENERGY[diagram[j][i]] * (abs(xoff) + abs(1-j))))
     return exits
 
 def printd(diagram):
@@ -118,33 +118,34 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, seen, energy):
-    print(f"energy: {energy};")
-    print(diagram)
-    printd(diagram)
-    import time
-    time.sleep(0.05)
+    # print(f"energy: {energy};")
+    # print(diagram)
+    # printd(diagram)
+    # import time
+    # time.sleep(0.05)
     diagram = [[ch for ch in row] for row in diagram]
     for y1 in range(1, len(diagram)-1): # greedy - always try to enter first
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
-            ch = diagram[y1][x1]
-            if ch in ROOMS:
-                moves = enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_moves(diagram, ch, x1, y1)
+            letter = diagram[y1][x1]
+            if letter in ROOMS:
+                moves = enter_moves(diagram, x1, y1) if y1 == 1 else exit_moves(diagram, x1, y1)
                 for x2, y2, e in moves:
                     if COMPLETE not in seen or energy + e < seen[COMPLETE]:
-                        diagram[y1][x1], diagram[y2][x2] = '.', ch
+                        diagram[y1][x1], diagram[y2][x2] = '.', letter
                         state = get_state(diagram)
                         if state not in seen or seen[state] > energy + e:
                             seen[state] = energy + e
                             if state != COMPLETE:
                                 get_solutions(diagram, seen, energy + e)
-                        diagram[y1][x1], diagram[y2][x2] = ch, '.'
+                        diagram[y1][x1], diagram[y2][x2] = letter, '.'
 
 def solution(diagram):
     seen = {get_state(diagram): 0}
     get_solutions(diagram, seen, 0)
     return seen[COMPLETE] if COMPLETE in seen else -1
 
-# assert(solution(example_p1) == 12521)
+assert(solution(example_p1) == 12521)
+print(":)")
 # p1 = solution(diagram_p1)
 # print(f"Part One: {p1}")
 # assert(p1 == 16506)
