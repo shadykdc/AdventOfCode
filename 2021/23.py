@@ -120,11 +120,11 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    # print(f"energy: {energy};")
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(0.1)
+    print(f"energy: {energy};")
+    print(diagram)
+    printd(diagram)
+    import time
+    time.sleep(0.2)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
@@ -138,7 +138,7 @@ def get_solutions(diagram, solutions, seen, energy):
                     if energy + e < min(solutions):
                         diagram[y1][x1], diagram[y2][x2] = '.', ch
                         state = get_state(diagram)
-                        if state not in seen or seen[state] > energy+e or complete(state):
+                        if state not in seen or seen[state] > energy + e or complete(state):
                             seen[state] = energy + e
                             get_solutions(diagram, solutions, seen, energy + e)
                         diagram[y1][x1], diagram[y2][x2] = ch, '.'
@@ -149,11 +149,12 @@ def solution(diagram):
     get_solutions(diagram, solutions, seen, 0)
     return min(solutions)
 
-assert(solution(example_p1) == 12521)
-p1 = solution(diagram_p1)
-print(f"Part One: {p1}")
-assert(p1 == 16506)
+# assert(solution(example_p1) == 12521)
+# p1 = solution(diagram_p1)
+# print(f"Part One: {p1}")
+# assert(p1 == 16506)
 
+print(solution(example_p2))
 assert(solution(example_p2) == 44169)
 p2 = solution(diagram_p2)
 print(f"Part Two: {p2}")
