@@ -156,5 +156,5 @@ assert(p1 == 16506)
 
 assert(solution(example_p2) == 44169)
 p2 = solution(diagram_p2)
-print(f"Part One: {p2}")
+print(f"Part Two: {p2}")
 # assert(p2 == 16506)
