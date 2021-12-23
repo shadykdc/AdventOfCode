@@ -49,6 +49,7 @@ def enter_moves(diagram, letter, i, j):
 
 def lat_enter_moves(diagram, letter, i, j):
     moves = []
+    diagram = [[ch for ch in row] for row in diagram]
     for x2, y2, e2 in lateral_moves(diagram, letter, i, j):
         diagram[j][i], diagram[y2][x2] = '.', letter
         moves.extend(enter_moves(diagram, letter, x2, y2))
@@ -89,6 +90,7 @@ def exit_moves(diagram, letter, i, j):
 
 def exit_lat_moves(diagram, letter, i, j):
     moves = []
+    diagram = [[ch for ch in row] for row in diagram]
     for x2, y2, e2 in exit_moves(diagram, letter, i, j):
         diagram[j][i], diagram[y2][x2] = '.', letter
         moves.extend(lateral_moves(diagram, letter, x2, y2))
@@ -102,11 +104,11 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    print(energy)
-    print(diagram)
-    printd(diagram)
-    import time
-    time.sleep(1)
+    # print(energy)
+    # print(diagram)
+    # printd(diagram)
+    # import time
+    # time.sleep(1)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
@@ -118,12 +120,12 @@ def get_solutions(diagram, solutions, seen, energy):
                 moves = lat_enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_lat_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
                     if energy + e < min(solutions):
-                        diagram[j][i], diagram[y2][x2] = '.', letter
+                        diagram[y1][x1], diagram[y2][x2] = '.', ch
                         state = get_state(diagram)
                         if state not in seen or complete(state):
                             seen.add(state)
                             get_solutions(diagram, solutions, seen, energy + e)
-                        diagram[j][i], diagram[y2][x2] = letter, '.'
+                        diagram[y1][x1], diagram[y2][x2] = ch, '.'
 
 def part_one(diagram):
     solutions = [999999999]
