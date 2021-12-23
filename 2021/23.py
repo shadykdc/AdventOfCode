@@ -83,9 +83,9 @@ def exit_moves(diagram, letter, i, j):
     if j != 1 and ROOMS[letter] != i or diagram[j+1][i] in ROOMS and ROOMS[diagram[j+1][i]] != i:
         for x in [1, -1]:
             if diagram[j-1][i+x] == '.':
-                exits.append((x+i, j-1, ENERGY[letter] * 2))
+                exits.append((i+x, j-1, ENERGY[letter] * 2))
             if diagram[j-2][i+x] == '.' and diagram[j-1][i] == '.':
-                exits.append((x+i, j-2, ENERGY[letter] * 3))
+                exits.append((i+x, j-2, ENERGY[letter] * 3))
     return exits
 
 def exit_lat_moves(diagram, letter, i, j):
@@ -104,12 +104,13 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    if energy in [40, 440, 3030+440, 3030+440+40, 3030+440+40+2003, 3030+440+40+2003+7000, 3030+440+40+2003+7000+8]:
+    # if energy in [40, 440, 3030+440, 3030+440+40, 3030+440+40+2003, 3030+440+40+2003+7000, 3030+440+40+2003+7000+8]:
+    if energy == 40:
         print(f"energy: {energy};")
         print(diagram)
         printd(diagram)
         import time
-        time.sleep(0.2) # B....... only seems to come from the left and not the right to start
+        time.sleep(0.2)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
