@@ -35,6 +35,17 @@ def get_state(diagram):
 def complete(state):
     return state == "##############...........####A#B#C#D######A#B#C#D################"
 
+def row_is_clear(diagram, i, j, off):
+    if off < 0:
+        for o in range(off, 0):
+            if diagram[j][i+o] != '.':
+                return False
+    elif off > 0:
+        for o in range(1, off+1):
+            if diagram[j][i+o] != '.':
+                return False
+    return True
+
 def enter_moves(diagram, letter, i, j):
     moves = []
     for off in range(-10, 11):
@@ -47,17 +58,6 @@ def enter_moves(diagram, letter, i, j):
             if diagram[j+2][i+off] in ROOMS and ROOMS[diagram[j+2][i+off]] == off+i:
                 moves.append((off+i, j+1, ENERGY[letter] * (abs(off) + 1)))
     return moves
-
-def row_is_clear(diagram, i, j, off):
-    if off < 0:
-        for o in range(off, 0):
-            if diagram[j][i+o] != '.':
-                return False
-    elif off > 0:
-        for o in range(1, off+1):
-            if diagram[j][i+o] != '.':
-                return False
-    return True
 
 def exit_moves(diagram, letter, i, j):
     exits = []
@@ -78,12 +78,11 @@ def printd(diagram):
 
 def get_solutions(diagram, solutions, seen, energy):
     # if energy in [40, 440, 3030+440, 3030+440+40, 3030+440+40+2003, 3030+440+40+2003+7000, 3030+440+40+2003+7000+8]:
-    if energy == 40:
-        print(f"energy: {energy};")
-        print(diagram)
-        printd(diagram)
-        import time
-        time.sleep(0.2)
+    # print(f"energy: {energy};")
+    # print(diagram)
+    # printd(diagram)
+    # import time
+    # time.sleep(1)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
