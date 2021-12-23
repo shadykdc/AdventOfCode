@@ -30,7 +30,7 @@ example = get_input("""\
 #############""")
 
 def get_state(diagram):
-    return "".join(["".join(row) for row in diagram])
+    return f"".join(["".join(row) for row in diagram])
 
 def complete(state):
     return state == "##############...........####A#B#C#D######A#B#C#D################"
@@ -78,11 +78,12 @@ def printd(diagram):
 
 def get_solutions(diagram, solutions, seen, energy):
     # if energy in [40, 440, 3030+440, 3030+440+40, 3030+440+40+2003, 3030+440+40+2003+7000, 3030+440+40+2003+7000+8]:
-    # print(f"energy: {energy};")
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(1)
+    # if energy <= 12561:
+        # print(f"energy: {energy};")
+        # print(diagram)
+        # printd(diagram)
+        # import time
+        # time.sleep(1)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
@@ -93,17 +94,17 @@ def get_solutions(diagram, solutions, seen, energy):
             if ch in ENERGY:
                 moves = enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
-                    if energy + e <= min(solutions):
+                    if energy + e < min(solutions):
                         diagram[y1][x1], diagram[y2][x2] = '.', ch
                         state = get_state(diagram)
-                        if state not in seen or complete(state):
-                            seen.add(state)
+                        if state not in seen or seen[state] > energy+e or complete(state):
+                            seen[state] = energy + e
                             get_solutions(diagram, solutions, seen, energy + e)
                         diagram[y1][x1], diagram[y2][x2] = ch, '.'
 
 def part_one(diagram):
     solutions = [999999999]
-    seen = {get_state(diagram)}
+    seen = {get_state(diagram): 0}
     get_solutions(diagram, solutions, seen, 0)
     return min(solutions)
 
