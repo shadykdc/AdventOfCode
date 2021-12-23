@@ -104,22 +104,23 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    # print(energy)
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(1)
+    if energy in [40, 440, 3030+440, 3030+440+40, 3030+440+40+2003, 3030+440+40+2003+7000, 3030+440+40+2003+7000+8]:
+        print(f"energy: {energy};")
+        print(diagram)
+        printd(diagram)
+        import time
+        time.sleep(0.2) # B....... only seems to come from the left and not the right to start
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
         return
-    for y1 in [2, 1, 3]:
+    for y1 in [1, 2, 3]:
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
             ch = diagram[y1][x1]
             if ch in ENERGY:
                 moves = lat_enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_lat_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
-                    if energy + e < min(solutions):
+                    if energy + e <= min(solutions):
                         diagram[y1][x1], diagram[y2][x2] = '.', ch
                         state = get_state(diagram)
                         if state not in seen or complete(state):
