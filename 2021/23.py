@@ -105,13 +105,11 @@ def no_bad_letters_in_col(diagram, i):
 def exit_moves(diagram, letter, i, j):
     exits = []
     if j != 1 and not no_bad_letters_in_col(diagram, i):
-        for xoff in range(-10, 11):
-            if i+xoff in range(1, len(diagram[0])-1)\
-            and xoff+i not in ROOMS.values():
-                yoff = 1-j
-                if col_is_clear(diagram, i, j, yoff)\
-                and row_is_clear(diagram, i, j+yoff, xoff):
-                    exits.append((i+xoff, j+yoff, ENERGY[letter] * (abs(xoff) + abs(yoff))))
+        for xoff in range(1-i, len(diagram[0])-1-i):
+            if xoff+i not in ROOMS.values()\
+            and col_is_clear(diagram, i, j, 1-j)\
+            and row_is_clear(diagram, i, 1, xoff):
+                exits.append((i+xoff, 1, ENERGY[letter] * (abs(xoff) + abs(1-j))))
     return exits
 
 def printd(diagram):
@@ -120,13 +118,13 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, seen, energy):
-    # print(f"energy: {energy};")
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(0.05)
+    print(f"energy: {energy};")
+    print(diagram)
+    printd(diagram)
+    import time
+    time.sleep(0.05)
     diagram = [[ch for ch in row] for row in diagram]
-    for y1 in range(1, len(diagram)-1):
+    for y1 in range(1, len(diagram)-1): # greedy - always try to enter first
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
             ch = diagram[y1][x1]
             if ch in ROOMS:
@@ -144,15 +142,16 @@ def get_solutions(diagram, seen, energy):
 def solution(diagram):
     seen = {get_state(diagram): 0}
     get_solutions(diagram, seen, 0)
-    return seen[COMPLETE]
+    return seen[COMPLETE] if COMPLETE in seen else -1
 
-assert(solution(example_p1) == 12521)
-p1 = solution(diagram_p1)
-print(f"Part One: {p1}")
-assert(p1 == 16506)
+# assert(solution(example_p1) == 12521)
+# p1 = solution(diagram_p1)
+# print(f"Part One: {p1}")
+# assert(p1 == 16506)
 
-print(solution(example_p2))
-assert(solution(example_p2) == 44169)
+ex_p2 = solution(example_p2)
+print(ex_p2)
+assert(ex_p2 == 44169)
 p2 = solution(diagram_p2)
 print(f"Part Two: {p2}")
 # assert(p2 == 16506)
