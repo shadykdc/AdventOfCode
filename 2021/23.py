@@ -82,7 +82,7 @@ def enter_moves(diagram, i, j):
     xoff = ROOMS[diagram[j][i]] - i
     if j == 1 and row_is_clear(diagram, i, j, xoff):
         for yoff in reversed(range(1, len(diagram)-2)): # start with bottom
-            if j+yoff in range(1, len(diagram)-1)\
+            if j+yoff in range(2, len(diagram)-1)\
             and diagram[yoff+j][xoff+i] == '.'\
             and col_is_clear(diagram, i+xoff, j, yoff)\
             and not bad_letters_in_col(diagram, i+xoff):
