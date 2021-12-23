@@ -36,20 +36,27 @@ def complete(state):
     return state == "##############...........####A#B#C#D######A#B#C#D################"
 
 def enter_moves(diagram, letter, i, j):
-    if j != 1:
-        return []
-    # lateral moves + enter move
-    lats = lateral_moves(diagram, letter, i, j)
-    for x2, y2, e2 in lats:
-        for x in [1, -1]:
-            if diagram[y2][x2+x] == '.'\
-            and diagram[y2+1][x2+x] == '.'\
-            and x2+x == ROOMS[letter]:
-                if diagram[y2+2][x2+x] == '.':
-                    return[(x+x2, y2+2, ENERGY[letter] * 3 + e2)]
-                if diagram[y2+2][x2+x] in ROOMS and ROOMS[diagram[y2+2][x2+x]] == x+x2:
-                    return[(x+x2, y2+1, ENERGY[letter] * 2 + e2)]
-    return []
+    moves = []
+    for x in [1, -1]:
+        if diagram[j][i+x] == '.'\
+        and diagram[j+1][i+x] == '.'\
+        and i+x == ROOMS[letter]:
+            if diagram[j+2][i+x] == '.':
+                moves.append((x+i, j+2, ENERGY[letter] * 3))
+            if diagram[j+2][i+x] in ROOMS and ROOMS[diagram[j+2][i+x]] == x+i:
+                moves.append((x+i, j+1, ENERGY[letter] * 2))
+    return moves
+
+def lat_enter_moves(diagram, letter, i, j):
+    moves = []
+    for x2, y2, e2 in lateral_moves(diagram, letter, i, j):
+        diagram[j][i] = '.'
+        diagram[y2][x2] = letter
+        moves.extend(enter_moves(diagram, letter, x2, y2))
+        moves = [(x, y, e2+e1) for x, y, e1 in moves]
+        diagram[j][i] = letter
+        diagram[y2][x2] = '.'
+    return moves
 
 def row_is_clear(diagram, i, j, off):
     if off < 0:
@@ -57,7 +64,7 @@ def row_is_clear(diagram, i, j, off):
             if diagram[j][i+o] != '.':
                 return False
     if off > 0:
-        for o in range(1, off):
+        for o in range(1, off+1):
             if diagram[j][i+o] != '.':
                 return False
     return True
@@ -73,14 +80,18 @@ def lateral_moves(diagram, letter, i, j):
     return moves
 
 def exit_moves(diagram, letter, i, j):
-    moves, exits = [], []
+    exits = []
     if j != 1 and ROOMS[letter] != i or diagram[j+1][i] in ROOMS and ROOMS[diagram[j+1][i]] != i:
         for x in [1, -1]:
             if diagram[j-1][i+x] == '.':
                 exits.append((x+i, j-1, ENERGY[letter] * 2))
             if diagram[j-2][i+x] == '.' and diagram[j-1][i] == '.':
                 exits.append((x+i, j-2, ENERGY[letter] * 3))
-    for x2, y2, e2 in exits:
+    return exits
+
+def exit_lat_moves(diagram, letter, i, j):
+    moves = []
+    for x2, y2, e2 in exit_moves(diagram, letter, i, j):
         diagram[j][i] = '.'
         diagram[y2][x2] = letter
         moves.extend(lateral_moves(diagram, letter, x2, y2))
@@ -95,10 +106,11 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    print(energy)
-    printd(diagram)
-    import time
-    time.sleep(0.1)
+    # print(energy)
+    # print(diagram)
+    # printd(diagram)
+    # import time
+    # time.sleep(1)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
@@ -107,7 +119,7 @@ def get_solutions(diagram, solutions, seen, energy):
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
             ch = diagram[y1][x1]
             if ch in ENERGY:
-                moves = enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_moves(diagram, ch, x1, y1)
+                moves = lat_enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_lat_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
                     if energy + e < min(solutions):
                         diagram[y1][x1] = '.'
