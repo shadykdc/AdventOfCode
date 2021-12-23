@@ -37,24 +37,15 @@ def complete(state):
 
 def enter_moves(diagram, letter, i, j):
     moves = []
-    for x in [1, -1]:
-        if diagram[j][i+x] == '.'\
-        and diagram[j+1][i+x] == '.'\
-        and i+x == ROOMS[letter]:
-            if diagram[j+2][i+x] == '.':
-                moves.append((x+i, j+2, ENERGY[letter] * 3))
-            if diagram[j+2][i+x] in ROOMS and ROOMS[diagram[j+2][i+x]] == x+i:
-                moves.append((x+i, j+1, ENERGY[letter] * 2))
-    return moves
-
-def lat_enter_moves(diagram, letter, i, j):
-    moves = []
-    diagram = [[ch for ch in row] for row in diagram]
-    for x2, y2, e2 in lateral_moves(diagram, letter, i, j):
-        diagram[j][i], diagram[y2][x2] = '.', letter
-        moves.extend(enter_moves(diagram, letter, x2, y2))
-        moves = [(x, y, e2+e1) for x, y, e1 in moves]
-        diagram[j][i], diagram[y2][x2] = letter, '.'
+    for off in range(-10, 11):
+        if i+off in range(len(diagram[0]))\
+        and diagram[j+1][i+off] == '.'\
+        and i+off == ROOMS[letter]\
+        and row_is_clear(diagram, i, j, off):
+            if diagram[j+2][i+off] == '.':
+                moves.append((off+i, j+2, ENERGY[letter] * (abs(off) + 2)))
+            if diagram[j+2][i+off] in ROOMS and ROOMS[diagram[j+2][i+off]] == off+i:
+                moves.append((off+i, j+1, ENERGY[letter] * (abs(off) + 1)))
     return moves
 
 def row_is_clear(diagram, i, j, off):
@@ -62,41 +53,23 @@ def row_is_clear(diagram, i, j, off):
         for o in range(off, 0):
             if diagram[j][i+o] != '.':
                 return False
-    if off > 0:
+    elif off > 0:
         for o in range(1, off+1):
             if diagram[j][i+o] != '.':
                 return False
     return True
 
-def lateral_moves(diagram, letter, i, j):
-    moves = []
-    if j == 1:
-        for off in range(-10, 11): # standing still is okay
-            if off+i in range(1, 12)\
-            and off+i not in ROOMS.values()\
-            and row_is_clear(diagram, i, j, off):
-                moves.append((off+i, j, ENERGY[letter] * abs(off)))
-    return moves
-
 def exit_moves(diagram, letter, i, j):
     exits = []
     if j != 1 and ROOMS[letter] != i or diagram[j+1][i] in ROOMS and ROOMS[diagram[j+1][i]] != i:
-        for x in [1, -1]:
-            if diagram[j-1][i+x] == '.':
-                exits.append((i+x, j-1, ENERGY[letter] * 2))
-            if diagram[j-2][i+x] == '.' and diagram[j-1][i] == '.':
-                exits.append((i+x, j-2, ENERGY[letter] * 3))
+        for off in range(-10, 11):
+            if i+off in range(len(diagram[0]))\
+            and off+i not in ROOMS.values():
+                if diagram[j-1][i+off] == '.' and row_is_clear(diagram, i, j-1, off):
+                    exits.append((i+off, j-1, ENERGY[letter] * (abs(off) + 1)))
+                if diagram[j-2][i+off] == '.' and diagram[j-1][i] == '.' and row_is_clear(diagram, i, j-2, off):
+                    exits.append((i+off, j-2, ENERGY[letter] * (abs(off) + 2)))
     return exits
-
-def exit_lat_moves(diagram, letter, i, j):
-    moves = []
-    diagram = [[ch for ch in row] for row in diagram]
-    for x2, y2, e2 in exit_moves(diagram, letter, i, j):
-        diagram[j][i], diagram[y2][x2] = '.', letter
-        moves.extend(lateral_moves(diagram, letter, x2, y2))
-        moves = [(x, y, e2+e1) for x, y, e1 in moves]
-        diagram[j][i], diagram[y2][x2] = letter, '.'
-    return moves
 
 def printd(diagram):
     for row in diagram:
@@ -119,7 +92,7 @@ def get_solutions(diagram, solutions, seen, energy):
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
             ch = diagram[y1][x1]
             if ch in ENERGY:
-                moves = lat_enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_lat_moves(diagram, ch, x1, y1)
+                moves = enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
                     if energy + e <= min(solutions):
                         diagram[y1][x1], diagram[y2][x2] = '.', ch
