@@ -78,7 +78,6 @@ def col_is_clear(diagram, i, j, off):
     return True
 
 def enter_moves(diagram, i, j):
-    moves = []
     xoff = ROOMS[diagram[j][i]] - i
     if j == 1 and row_is_clear(diagram, i, j, xoff):
         for yoff in reversed(range(1, len(diagram)-2)): # start with bottom
@@ -86,11 +85,8 @@ def enter_moves(diagram, i, j):
             and diagram[yoff+j][xoff+i] == '.'\
             and col_is_clear(diagram, i+xoff, j, yoff)\
             and not bad_letters_in_col(diagram, i+xoff):
-                moves.append(
-                    (xoff+i, j+yoff, ENERGY[diagram[j][i]] * (abs(xoff) + abs(yoff)))
-                )
-                break # always go to the bottom
-    return moves
+                return[(xoff+i, j+yoff, ENERGY[diagram[j][i]] * (abs(xoff) + abs(yoff)))]
+    return []
 
 def bad_letters_in_col(diagram, i):
     for j in range(2, len(diagram)-1):
