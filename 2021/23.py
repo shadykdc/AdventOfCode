@@ -50,12 +50,10 @@ def enter_moves(diagram, letter, i, j):
 def lat_enter_moves(diagram, letter, i, j):
     moves = []
     for x2, y2, e2 in lateral_moves(diagram, letter, i, j):
-        diagram[j][i] = '.'
-        diagram[y2][x2] = letter
+        diagram[j][i], diagram[y2][x2] = '.', letter
         moves.extend(enter_moves(diagram, letter, x2, y2))
         moves = [(x, y, e2+e1) for x, y, e1 in moves]
-        diagram[j][i] = letter
-        diagram[y2][x2] = '.'
+        diagram[j][i], diagram[y2][x2] = letter, '.'
     return moves
 
 def row_is_clear(diagram, i, j, off):
@@ -92,12 +90,10 @@ def exit_moves(diagram, letter, i, j):
 def exit_lat_moves(diagram, letter, i, j):
     moves = []
     for x2, y2, e2 in exit_moves(diagram, letter, i, j):
-        diagram[j][i] = '.'
-        diagram[y2][x2] = letter
+        diagram[j][i], diagram[y2][x2] = '.', letter
         moves.extend(lateral_moves(diagram, letter, x2, y2))
         moves = [(x, y, e2+e1) for x, y, e1 in moves]
-        diagram[j][i] = letter
-        diagram[y2][x2] = '.'
+        diagram[j][i], diagram[y2][x2] = letter, '.'
     return moves
 
 def printd(diagram):
@@ -106,11 +102,11 @@ def printd(diagram):
     print(" ")
 
 def get_solutions(diagram, solutions, seen, energy):
-    # print(energy)
-    # print(diagram)
-    # printd(diagram)
-    # import time
-    # time.sleep(1)
+    print(energy)
+    print(diagram)
+    printd(diagram)
+    import time
+    time.sleep(1)
     diagram = [[ch for ch in row] for row in diagram]
     if complete(get_state(diagram)):
         solutions.append(energy)
@@ -122,14 +118,12 @@ def get_solutions(diagram, solutions, seen, energy):
                 moves = lat_enter_moves(diagram, ch, x1, y1) if y1 == 1 else exit_lat_moves(diagram, ch, x1, y1)
                 for x2, y2, e in moves:
                     if energy + e < min(solutions):
-                        diagram[y1][x1] = '.'
-                        diagram[y2][x2] = ch
+                        diagram[j][i], diagram[y2][x2] = '.', letter
                         state = get_state(diagram)
                         if state not in seen or complete(state):
                             seen.add(state)
                             get_solutions(diagram, solutions, seen, energy + e)
-                        diagram[y1][x1] = ch
-                        diagram[y2][x2] = '.'
+                        diagram[j][i], diagram[y2][x2] = letter, '.'
 
 def part_one(diagram):
     solutions = [999999999]
