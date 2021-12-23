@@ -50,9 +50,8 @@ example_p2 = get_input("""\
 def get_state(diagram):
     return f"".join(["".join(row) for row in diagram])
 
-COMPLETE = "##############...........####A#B#C#D######A#B#C#D################"
-def complete(state):
-    return state == COMPLETE
+COMPLETE1 = "##############...........####A#B#C#D######A#B#C#D################"
+COMPLETE2 = "##############...........####A#B#C#D######A#B#C#D######A#B#C#D######A#B#C#D################"
 
 def row_is_clear(diagram, i, j, off):
     assert(i+off in range(0, len(diagram[0])))
@@ -109,12 +108,7 @@ def printd(diagram):
         print("".join(row))
     print(" ")
 
-def get_solutions(diagram, seen, energy):
-    print(f"energy: {energy};")
-    print(diagram)
-    printd(diagram)
-    import time
-    time.sleep(0.02)
+def get_solutions(diagram, seen, energy, complete):
     diagram = [[ch for ch in row] for row in diagram]
     for y1 in range(1, len(diagram)-1): # greedy - always try to enter first
         for x1 in range(1, 12) if y1 == 1 else list(ROOMS.values()):
@@ -122,28 +116,26 @@ def get_solutions(diagram, seen, energy):
             if letter in ROOMS:
                 moves = enter_moves(diagram, x1, y1) if y1 == 1 else exit_moves(diagram, x1, y1)
                 for x2, y2, e in moves:
-                    if COMPLETE not in seen or energy + e < seen[COMPLETE]:
+                    if complete not in seen or energy + e < seen[complete]:
                         diagram[y1][x1], diagram[y2][x2] = '.', letter
                         state = get_state(diagram)
                         if state not in seen or seen[state] > energy + e:
                             seen[state] = energy + e
-                            if state != COMPLETE:
-                                get_solutions(diagram, seen, energy + e)
+                            if state != complete:
+                                get_solutions(diagram, seen, energy + e, complete)
                         diagram[y1][x1], diagram[y2][x2] = letter, '.'
 
-def solution(diagram):
+def solution(diagram, complete):
     seen = {get_state(diagram): 0}
-    get_solutions(diagram, seen, 0)
-    return seen[COMPLETE] if COMPLETE in seen else -1
+    get_solutions(diagram, seen, 0, complete)
+    return seen[complete] if complete in seen else -1
 
-# assert(solution(example_p1) == 12521)
-# p1 = solution(diagram_p1)
-# print(f"Part One: {p1}")
-# assert(p1 == 16506)
+assert(solution(example_p1, COMPLETE1) == 12521)
+p1 = solution(diagram_p1, COMPLETE1)
+print(f"Part One: {p1}")
+assert(p1 == 16506)
 
-ex_p2 = solution(example_p2)
-print(ex_p2)
-assert(ex_p2 == 44169)
-p2 = solution(diagram_p2)
+assert(solution(example_p2, COMPLETE2) == 44169)
+p2 = solution(diagram_p2, COMPLETE2)
 print(f"Part Two: {p2}")
-# assert(p2 == 16506)
+assert(p2 == 48304)
