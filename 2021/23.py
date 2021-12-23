@@ -79,19 +79,20 @@ def col_is_clear(diagram, i, j, off):
 
 def enter_moves(diagram, i, j):
     moves = []
-    letter = diagram[j][i]
     if j != 1:
         return moves
     for xoff in range(-10, 11):
         if i+xoff in range(len(diagram[0]))\
-        and i+xoff == ROOMS[letter]\
+        and i+xoff == ROOMS[diagram[j][i]]\
         and row_is_clear(diagram, i, j, xoff):
-            for yoff in reversed(range(1, len(diagram)-2)):
+            for yoff in reversed(range(1, len(diagram)-2)): # start with bottom
                 if j+yoff in range(1, len(diagram)-1)\
                 and diagram[yoff+j][xoff+i] == '.'\
                 and col_is_clear(diagram, i+xoff, j, yoff)\
                 and not bad_letters_in_col(diagram, i+xoff):
-                    moves.append((xoff+i, j+yoff, ENERGY[letter] * (abs(xoff) + abs(yoff))))
+                    moves.append(
+                        (xoff+i, j+yoff, ENERGY[diagram[j][i]] * (abs(xoff) + abs(yoff)))
+                    )
                     break # always go to the bottom
     return moves
 
@@ -104,10 +105,9 @@ def bad_letters_in_col(diagram, i):
 
 def exit_moves(diagram, i, j):
     exits = []
-    if j != 1 and bad_letters_in_col(diagram, i):
+    if j != 1 and bad_letters_in_col(diagram, i) and col_is_clear(diagram, i, j, 1-j):
         for xoff in range(1-i, len(diagram[0])-1-i):
             if xoff+i not in ROOMS.values()\
-            and col_is_clear(diagram, i, j, 1-j)\
             and row_is_clear(diagram, i, 1, xoff):
                 exits.append((i+xoff, 1, ENERGY[diagram[j][i]] * (abs(xoff) + abs(1-j))))
     return exits
@@ -144,8 +144,7 @@ def solution(diagram):
     get_solutions(diagram, seen, 0)
     return seen[COMPLETE] if COMPLETE in seen else -1
 
-assert(solution(example_p1) == 12521)
-print(":)")
+# assert(solution(example_p1) == 12521)
 # p1 = solution(diagram_p1)
 # print(f"Part One: {p1}")
 # assert(p1 == 16506)
