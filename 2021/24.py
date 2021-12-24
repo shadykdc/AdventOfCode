@@ -4,52 +4,28 @@ def get_input(name):
 
 monad = get_input('input24.txt')
 
-from bisect import bisect_left
+def run(monad):
+    ws_big = [0 for _ in range(14)]
+    ws_small = [0 for _ in range(14)]
+    stack = []
+    for i in range(int(len(monad)/18)):
+        a = int(monad[18*i+4][2])
+        assert(a == 1 or a == 26)
+        if a == 1:
+            # store the y value and our index (for ws)
+            stack.append((int(monad[18*i+15][2]), i))
+        else:
+            # pop y and index and add y to x to get w
+            y, j = stack.pop()
+            w = y + int(monad[18*i+5][2])
+            assert(w in range(-9, 10))
+            if w < 0:
+                i, j, w = j, i, -w
+            ws_big[i] = 9
+            ws_big[j] = 9 - w
+            ws_small[i] = 1 + w
+            ws_small[j] = 1
+    print("".join([str(num) for num in ws_big])) # 94992992796199
+    print("".join([str(num) for num in ws_small])) # 11931881141161
 
-def run(model, monad):
-    alu = dict({'w': 0, 'x': 0, 'y': 0, 'z': 0})
-    for instr in monad:
-        cmd = instr[0]
-        a = instr[1]
-        b = 0
-        if len(instr) == 3:
-            try:
-                b = int(instr[2])
-            except Exception:
-                b = alu[instr[2]]
-        if instr[0] == 'inp':
-            alu[a] = model.pop(0)
-        elif instr[0] == 'add':
-            alu[a] = alu[a] + b
-        elif instr[0] == 'mod':
-            assert(alu[a] >=0 and b > 0)
-            alu[a] = alu[a] % b
-        elif instr[0] == 'div':
-            assert(b > 0)
-            alu[a] = int(alu[a] / b)
-        elif instr[0] == 'mul':
-            alu[a] = alu[a] * b
-        elif instr[0] == 'eql':
-            alu[a] = 1 if alu[a] == b else 0
-    # print(f"monad ended: {alu}")
-    return alu
-
-def part_one(monad):
-    for model in reversed(range(11111111111111, 100000000000000)):
-        if model % 10000 == 0:
-            print(model)
-        digits = [int(d) for d in str(model)]
-        if 0 in digits:
-            continue
-        if run(digits, monad)['z'] == 0:
-            return model
-    return 0
-
-print(f"Part 1: {part_one(monad)}")
-
-
-def part_two(monad):
-    return 0
-
-print(f"Part 2: {part_two(monad)}")
-assert(part_two(monad) == 0)
+run(monad)
