@@ -12,12 +12,6 @@ example = [
     "v.v..>>v.v",
     "....v..v.>",
 ]
-example2 = [
-    "..........",
-    ".>v....v..",
-    ".......>..",
-    "..........",
-]
 
 def move_south(lines):
     out = False
@@ -60,9 +54,8 @@ def part_one(lines):
     return count
 
 assert(part_one(example) == 58)
-print(":)")
 print(f"Part 1: {part_one(lines)}")
-# assert(part_one(lines) == 0)
+assert(part_one(lines) == 305)
 
 
 def part_two(lines):
