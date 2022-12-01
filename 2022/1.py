@@ -20,10 +20,11 @@ with open(f'input{Path(__file__).stem}.txt', 'r') as f:
             calories = []
 
 
-def get_k_snackiest_calories(elves, k):
+def part1and2(elves, k = 1):
+    # get k elves with the most snacks and return the total calories
     return sum(sorted(sum(cals) for cals in elves)[-k:])
 
-answer(get_k_snackiest_calories(example, 1), "Example 1", 24000)
-answer(get_k_snackiest_calories(elves_snacks, 1), "Part 1", 71924)
-answer(get_k_snackiest_calories(example, 3), "Example 2", 45000)
-answer(get_k_snackiest_calories(elves_snacks, 3), "Part 2", 210406)
+answer(part1and2(example), "Example 1", 24000)
+answer(part1and2(elves_snacks), "Part 1", 71924)
+answer(part1and2(example, 3), "Example 2", 45000)
+answer(part1and2(elves_snacks, 3), "Part 2", 210406)
