@@ -33,6 +33,6 @@ def part2(pairs):
 
 
 answer(part1(get_input(example)), "Example 1", 2)
-answer(part1(puzzle_input), "Part 1")
+answer(part1(puzzle_input), "Part 1", 464)
 answer(part2(get_input(example)), "Example 2", 4)
-answer(part2(puzzle_input), "Part 2")
+answer(part2(puzzle_input), "Part 2", 770)
