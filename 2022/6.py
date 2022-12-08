@@ -1,6 +1,5 @@
 from pathlib import Path
 from utils import answer
-import re
 
 p1_examples = {
     "bvwbjplbgvbhsrlpgdmjqwftvncz": 5,
