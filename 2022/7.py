@@ -1,6 +1,5 @@
 from pathlib import Path
 from utils import answer
-import re
 from functools import lru_cache
 
 example = [
@@ -40,34 +39,35 @@ class Directory:
     def __str__(self):
         return str(self.dirs)
 
-    def add_file(self, name, size):
-        self.files[name] = size
-
     def add_dir(self, d):
         d.parent = self
         self.dirs[d.name] = d
 
-    def get_dir(self, name):
-        return self.dirs[name]
-
     @lru_cache(maxsize=None)
     def get_size(self):
-        return sum([self.dirs[d].get_size() for d in self.dirs]) + sum([self.files[f] for f in self.files])
+        return sum(
+            [self.dirs[d].get_size() for d in self.dirs]
+        ) + sum(
+            [self.files[f] for f in self.files]
+        )
 
     def get_root(self):
         root = self
         while root.parent is not None:
-            root = self.parent
+            root = root.parent
         return root
 
     @lru_cache(maxsize=None)
     def part1(self, limit = 100000):
-        output = self.get_size() if self.get_size() < limit else 0
+        total = self.get_size() if self.get_size() < limit else 0
         for d in self.dirs:
             size = self.dirs[d].part1(limit)
             if size < limit:
-                output += size
-        return output
+                total += size
+        return total
+
+    def part2(self):
+        return 111
 
 def get_input(lines):
     cd = None
@@ -76,18 +76,18 @@ def get_input(lines):
             if line.strip() == "$ cd ..":
                 cd = cd.parent
             else:
-                name = line[5:].strip()
+                name = line.strip().split()[2]
                 if cd:
-                    cd = cd.get_dir(name)
+                    cd = cd.dirs[name]
                 else:
                     cd = Directory(name)
         elif line.startswith("$ ls"):
             continue
         elif line.startswith("dir"):
-            cd.add_dir(Directory(line[4:].strip()))
+            cd.add_dir(Directory(line.strip().split()[1]))
         else:
             size, name = line.strip().split()
-            cd.add_file(name, int(size))
+            cd.files[name] = int(size)
     return cd.get_root()
 
 
@@ -95,4 +95,6 @@ with open(f'input{Path(__file__).stem}.txt', 'r') as f:
     my_input = f.readlines()
 
 answer(get_input(example).part1(), "Example 1", 95437)
-answer(get_input(my_input).part1(), "Part 1")
+answer(get_input(my_input).part1(), "Part 1", 94821)
+answer(get_input(example).part2(), "Example 2", 111)
+answer(get_input(my_input).part2(), "Part 2", 111)

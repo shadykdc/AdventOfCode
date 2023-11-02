@@ -50,11 +50,6 @@ def part1(nums):
                 biggest = nums[r][c]
     return sum([sum(row) for row in count])
 
-
-answer(part1(get_input(example)), "Example 1", 21)
-answer(part1(get_input(my_input)), "Part 1", 1546)
-
-
 def get_dists(row, col, nums):
     dists = [ 0, 0, 0, 0]
     # up
@@ -85,5 +80,7 @@ def part2(nums):
     ] for r, row in enumerate(nums)]
     return max([max(row) for row in scores])
 
+answer(part1(get_input(example)), "Example 1", 21)
+answer(part1(get_input(my_input)), "Part 1", 1546)
 answer(part2(get_input(example)), "Example 2", 8)
 answer(part2(get_input(my_input)), "Part 2", 519064)
